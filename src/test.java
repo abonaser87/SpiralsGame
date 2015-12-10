@@ -1,3 +1,5 @@
+import com.intellij.uiDesigner.core.GridConstraints;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,12 +28,15 @@ public class test {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 addPart(circuit, i);
+                i++;
             }
         });
+        rootPanel.validate();
     }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("test");
+
         frame.setContentPane(new test().rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -42,8 +47,9 @@ public class test {
         part = "Part " + String.valueOf(i);
         JLabel b = new JLabel(part);
 
-        rootPanel.add(b);
-        parts.put(part, b);
-        rootPanel.invalidate();
+        rootPanel.add(b, new GridConstraints());
+//        parts.put(part, b);
+        rootPanel.revalidate();
+        rootPanel.repaint();
     }
 }
