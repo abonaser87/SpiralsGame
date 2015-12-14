@@ -8,14 +8,15 @@ import java.awt.event.ActionListener;
  * Created by 84170 on 14/12/2015.
  */
 public class ckts {
-    int part = 0;
+    int part = 1;
     JPanel rootPanel = new JPanel(new BorderLayout(3, 3));
     JPanel substationPanel = new JPanel(new GridLayout(6, 0));
-    JPanel transmission = new JPanel(new GridLayout(3, 2));
+    JPanel transmission = new JPanel(new GridBagLayout());
     JPanel btns = new JPanel(new GridLayout(0, 2));
     JButton addCircuit = new JButton("Add Circuit");
     JButton createPython = new JButton("Create Python");
-    // TODO : Fix part number not increasing and GridBagLayout for transmission
+    GridBagConstraints c = new GridBagConstraints();
+
     private int circuit = 1;
 
     public ckts() {
@@ -53,7 +54,7 @@ public class ckts {
     }
 
     private void addCircuits(final int circuit) {
-
+        part=1;
         JPanel from = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
         final JPanel parts = new JPanel(new GridLayout(0, 3));
         final JPanel btn = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
@@ -63,12 +64,16 @@ public class ckts {
         JTextField txtFrom = new JTextField();
         JLabel to = new JLabel("To");
         JTextField txtTo = new JTextField();
+        txtFrom.setPreferredSize(new Dimension(100,30));
+        txtTo.setPreferredSize(new Dimension(100,30));
         from.add(ckt);
         from.add(fromL);
         from.add(txtFrom);
         from.add(to);
         from.add(txtTo);
-        transmission.add(from, BorderLayout.NORTH);
+        c.gridy=0;
+        c.gridx=circuit-1;
+        transmission.add(from, c);
         // Parts
 
         // Add Part
@@ -76,27 +81,31 @@ public class ckts {
         addBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                addParts(part, circuit, parts);
+                part++; addParts(part, circuit, parts);
             }
         });
         addParts(part, circuit, parts);
         btn.add(addBtn);
-
-        transmission.add(btn, BorderLayout.SOUTH);
+        c.gridy=2;
+        c.gridx=circuit-1;
+        transmission.add(btn, c);
+        transmission.revalidate();
     }
 
     private void addParts(int part, final int circuit, JPanel parts) {
-        part++;
+        //part++;
         String prt = "Part " + String.valueOf(part);
         JLabel partLabel = new JLabel(prt);
         JTextField lnth = new JTextField();
         JComboBox type = new JComboBox();
+        lnth.setPreferredSize(new Dimension(50,33));
         parts.add(partLabel);
         parts.add(lnth);
         parts.add(type);
-
-        transmission.add(parts, BorderLayout.CENTER);
-        transmission.revalidate();
+        c.gridy=1;
+        c.gridx=circuit-1;
+        transmission.add(parts, c);
+        parts.revalidate();
 
     }
 
