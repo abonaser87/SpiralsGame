@@ -3,12 +3,15 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by 84170 on 14/12/2015.
  */
 public class ckts {
-    int part = 1;
+    int part = 0;
     JPanel rootPanel = new JPanel(new BorderLayout(3, 3));
     JPanel substationPanel = new JPanel(new GridLayout(6, 0));
     JPanel transmission = new JPanel(new GridBagLayout());
@@ -16,7 +19,7 @@ public class ckts {
     JButton addCircuit = new JButton("Add Circuit");
     JButton createPython = new JButton("Create Python");
     GridBagConstraints c = new GridBagConstraints();
-
+    Map<Integer, String> totalParts = new TreeMap<Integer, String>();
     private int circuit = 1;
 
     public ckts() {
@@ -34,6 +37,12 @@ public class ckts {
             public void actionPerformed(ActionEvent actionEvent) {
                 circuit++;
                 addCircuits(circuit);
+            }
+        });
+        createPython.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.print(totalParts);
             }
         });
         rootPanel.add(substationPanel, BorderLayout.NORTH);
@@ -90,6 +99,7 @@ public class ckts {
         c.gridx=circuit-1;
         transmission.add(btn, c);
         transmission.revalidate();
+
     }
 
     private void addParts(int part, final int circuit, JPanel parts) {
@@ -99,6 +109,7 @@ public class ckts {
         JTextField lnth = new JTextField();
         JComboBox type = new JComboBox();
         lnth.setPreferredSize(new Dimension(50,33));
+        totalParts.put(part,lnth.getText());
         parts.add(partLabel);
         parts.add(lnth);
         parts.add(type);
