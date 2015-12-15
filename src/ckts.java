@@ -3,6 +3,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,18 +11,23 @@ import java.util.TreeMap;
  * Created by 84170 on 14/12/2015.
  */
 public class ckts {
-    final JFrame frame = new JFrame("circuits");
+    //TODO: Checkbox data to populate from map?
+    //TODO: Parts map implementation
+    final JFrame frame = new JFrame("lines");
     int part = 1;
     JPanel rootPanel = new JPanel(new BorderLayout(3, 3));
     JPanel substationPanel = new JPanel(new GridLayout(6, 0));
     JPanel transmission = new JPanel(new GridBagLayout());
     JPanel btns = new JPanel(new GridLayout(0, 2));
-    JButton addCircuit = new JButton("Add Circuit");
+    JButton addline = new JButton("Add Line");
     JButton createPython = new JButton("Create Python");
     GridBagConstraints c = new GridBagConstraints();
     Map<Integer, Integer> totalParts = new TreeMap<Integer, Integer>();
-    int oldcircuit = 1;
-    private int circuit = 1;
+    Map<Integer, ArrayList<JTextField>> fromTxt = new TreeMap<>();
+    Map<Integer, JCheckBox> dckts = new TreeMap<>();
+    private int line = 1;
+
+
     public ckts() {
 
         frame.setContentPane(rootPanel);
@@ -30,32 +36,40 @@ public class ckts {
         substationPanel.setBorder(new TitledBorder("Substation"));
         transmission.setBorder(new TitledBorder("Transmission Lines"));
 
-        btns.add(addCircuit);
+        btns.add(addline);
         btns.add(createPython);
-        addCircuit.addActionListener(new ActionListener() {
+        addline.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                circuit++;
-                addCircuits(circuit);
+                line++;
+                addlines(line);
                 frame.pack();
             }
         });
-        oldcircuit = circuit;
+
         createPython.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.print(totalParts.values());
-                System.out.print(totalParts.keySet());
-//                for(Integer i : totalParts.keySet()){
-//                    System.out.println(totalParts.get(i).getText());
-//                }
+//                System.out.print(totalParts.values());
+//                System.out.print(totalParts.keySet());
+//                System.out.println(fromTxt.values());
+//                System.out.println(fromTxt.keySet());
+                System.out.println(fromTxt.keySet());
 
+                for (Integer key : fromTxt.keySet()) {
+                    for (JTextField jTextField : fromTxt.get(key)) {
+                        System.out.println(jTextField.getText());
+                    }
+                }
+                for (Integer key : dckts.keySet()) {
+                    System.out.println(dckts.get(key).isSelected());
+                }
             }
         });
         rootPanel.add(substationPanel, BorderLayout.NORTH);
         rootPanel.add(transmission, BorderLayout.CENTER);
         rootPanel.add(btns, BorderLayout.SOUTH);
-        addCircuits(circuit);
+        addlines(line);
 
         rootPanel.invalidate();
         rootPanel.repaint();
@@ -69,16 +83,17 @@ public class ckts {
         ckts test = new ckts();
     }
 
-    private void addCircuits(final int circuit) {
+    private void addlines(final int line) {
         //part=1;
+        ArrayList<JTextField> temp = new ArrayList<>();
         setPart(1);
-        totalParts.put(circuit, part);
+        totalParts.put(line, part);
 
         JPanel from = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
         final JPanel parts = new JPanel(new GridLayout(0, 3));
         final JPanel btn = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
         // From panel component
-        JLabel ckt = new JLabel("Circuit" + String.valueOf(circuit));
+        JLabel ckt = new JLabel("Line " + String.valueOf(line));
         JLabel fromL = new JLabel("From");
         JTextField txtFrom = new JTextField();
         JLabel to = new JLabel("To");
@@ -87,7 +102,7 @@ public class ckts {
         txtFrom.setPreferredSize(new Dimension(40, 30));
         txtTo.setPreferredSize(new Dimension(40, 30));
         c.gridy = 0;
-        c.gridx = circuit - 1;
+        c.gridx = line - 1;
         transmission.add(ckt);
         from.add(fromL);
         from.add(txtFrom);
@@ -96,10 +111,16 @@ public class ckts {
         from.add(doubleCkts);
         from.setBorder(new TitledBorder(""));
         c.gridy = 1;
-        c.gridx=circuit-1;
+        c.gridx = line - 1;
         //c.ipadx=5;
 
         transmission.add(from, c);
+        temp.add(txtFrom);
+        temp.add(txtTo);
+        fromTxt.put(line, temp);
+        //temp.clear();
+        dckts.put(line, doubleCkts);
+
         // Parts
 
         // Add Part
@@ -108,38 +129,38 @@ public class ckts {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                setPart(totalParts.get(circuit));
+                setPart(totalParts.get(line));
                 part++;
-                addParts(part, circuit, parts);
+                addParts(part, line, parts);
                 frame.pack();
 
             }
         });
-        addParts(part, circuit, parts);
+        addParts(part, line, parts);
         btn.add(addBtn);
 
         c.gridy = 3;
-        c.gridx=circuit-1;
+        c.gridx = line - 1;
 
         transmission.add(btn, c);
         transmission.revalidate();
 
     }
 
-    private void addParts(int part, final int circuit, JPanel parts) {
+    private void addParts(int part, final int line, JPanel parts) {
         //part++;
-        totalParts.put(circuit, part);
+        totalParts.put(line, part);
         String prt = "Part " + String.valueOf(part);
         JLabel partLabel = new JLabel(prt);
         JTextField lnth = new JTextField();
         JComboBox type = new JComboBox();
-        lnth.setPreferredSize(new Dimension(50,33));
+        lnth.setPreferredSize(new Dimension(50, 33));
 
         parts.add(partLabel);
         parts.add(lnth);
         parts.add(type);
         c.gridy = 2;
-        c.gridx=circuit-1;
+        c.gridx = line - 1;
         transmission.add(parts, c);
         parts.revalidate();
 
