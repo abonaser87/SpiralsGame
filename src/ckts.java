@@ -3,7 +3,6 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -11,7 +10,8 @@ import java.util.TreeMap;
  * Created by 84170 on 14/12/2015.
  */
 public class ckts {
-    int part = 0;
+    final JFrame frame = new JFrame("circuits");
+    int part = 1;
     JPanel rootPanel = new JPanel(new BorderLayout(3, 3));
     JPanel substationPanel = new JPanel(new GridLayout(6, 0));
     JPanel transmission = new JPanel(new GridBagLayout());
@@ -19,11 +19,11 @@ public class ckts {
     JButton addCircuit = new JButton("Add Circuit");
     JButton createPython = new JButton("Create Python");
     GridBagConstraints c = new GridBagConstraints();
-    Map<Integer, String> totalParts = new TreeMap<Integer, String>();
+    Map<Integer, Integer> totalParts = new TreeMap<Integer, Integer>();
+    int oldcircuit = 1;
     private int circuit = 1;
-
     public ckts() {
-        JFrame frame = new JFrame("circuits");
+
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -37,12 +37,19 @@ public class ckts {
             public void actionPerformed(ActionEvent actionEvent) {
                 circuit++;
                 addCircuits(circuit);
+                frame.pack();
             }
         });
+        oldcircuit = circuit;
         createPython.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.print(totalParts);
+                System.out.print(totalParts.values());
+                System.out.print(totalParts.keySet());
+//                for(Integer i : totalParts.keySet()){
+//                    System.out.println(totalParts.get(i).getText());
+//                }
+
             }
         });
         rootPanel.add(substationPanel, BorderLayout.NORTH);
@@ -63,7 +70,10 @@ public class ckts {
     }
 
     private void addCircuits(final int circuit) {
-        part=1;
+        //part=1;
+        setPart(1);
+        totalParts.put(circuit, part);
+
         JPanel from = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
         final JPanel parts = new JPanel(new GridLayout(0, 3));
         final JPanel btn = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
@@ -73,15 +83,22 @@ public class ckts {
         JTextField txtFrom = new JTextField();
         JLabel to = new JLabel("To");
         JTextField txtTo = new JTextField();
-        txtFrom.setPreferredSize(new Dimension(100,30));
-        txtTo.setPreferredSize(new Dimension(100,30));
-        from.add(ckt);
+        JCheckBox doubleCkts = new JCheckBox("Check if double circuits");
+        txtFrom.setPreferredSize(new Dimension(40, 30));
+        txtTo.setPreferredSize(new Dimension(40, 30));
+        c.gridy = 0;
+        c.gridx = circuit - 1;
+        transmission.add(ckt);
         from.add(fromL);
         from.add(txtFrom);
         from.add(to);
         from.add(txtTo);
-        c.gridy=0;
+        from.add(doubleCkts);
+        from.setBorder(new TitledBorder(""));
+        c.gridy = 1;
         c.gridx=circuit-1;
+        //c.ipadx=5;
+
         transmission.add(from, c);
         // Parts
 
@@ -89,14 +106,21 @@ public class ckts {
         final JButton addBtn = new JButton("Add Part");
         addBtn.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                part++; addParts(part, circuit, parts);
+            public void actionPerformed(ActionEvent e) {
+
+                setPart(totalParts.get(circuit));
+                part++;
+                addParts(part, circuit, parts);
+                frame.pack();
+
             }
         });
         addParts(part, circuit, parts);
         btn.add(addBtn);
-        c.gridy=2;
+
+        c.gridy = 3;
         c.gridx=circuit-1;
+
         transmission.add(btn, c);
         transmission.revalidate();
 
@@ -104,22 +128,29 @@ public class ckts {
 
     private void addParts(int part, final int circuit, JPanel parts) {
         //part++;
+        totalParts.put(circuit, part);
         String prt = "Part " + String.valueOf(part);
         JLabel partLabel = new JLabel(prt);
         JTextField lnth = new JTextField();
         JComboBox type = new JComboBox();
         lnth.setPreferredSize(new Dimension(50,33));
-        totalParts.put(part,lnth.getText());
+
         parts.add(partLabel);
         parts.add(lnth);
         parts.add(type);
-        c.gridy=1;
+        c.gridy = 2;
         c.gridx=circuit-1;
         transmission.add(parts, c);
         parts.revalidate();
 
     }
 
+    public int getPart() {
+        return part;
+    }
 
+    public void setPart(int part) {
+        this.part = part;
+    }
 }
 
