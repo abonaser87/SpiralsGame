@@ -3,9 +3,8 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by 84170 on 14/12/2015.
@@ -25,10 +24,26 @@ public class ckts {
     Map<Integer, Integer> totalParts = new TreeMap<Integer, Integer>();
     Map<Integer, ArrayList<JTextField>> fromTxt = new TreeMap<>();
     Map<Integer, JCheckBox> dckts = new TreeMap<>();
+    float[] texxt = {1,2,3};
+    Map<String, List<Double>> data = new TreeMap<String, List<Double>>();
     private int line = 1;
 
-
     public ckts() {
+
+        data.put("ACSR-CONDOR 1x402", Arrays.asList(0.000513,0.002753,0.000627,0.001103,0.005573));
+        data.put("ACSR-CONDOR 2x402",Arrays.asList(0.000257,0.001795,0.000897,0.000981,0.005173));
+        data.put("ACSR-HAWK 1x240",Arrays.asList(0.000855,0.002697,0.000602,0.001265,0.005625));
+        data.put("GTACSR-CONDOR 1x402",Arrays.asList(0.000513,0.002753,0.000627,0.001414,0.006851));
+        data.put("OSTRICH 1x152",Arrays.asList(0.001358,0.002797,0.000580,0.001505,0.005675));
+        data.put("XLPE 1x1000",Arrays.asList(0.000134,0.001483,0.013787,0.000562,0.000581));
+        data.put("XLPE 1x1200",Arrays.asList(0.000103,0.001426,0.015194,0.000461,0.000495));
+        data.put("GTACSR-HAWK 1x240",Arrays.asList(0.000855,0.002697,0.000602,0.001265,0.005625));
+        data.put("H-resistance-SAPS 1x282",Arrays.asList(0.000730,0.002675,0.000607,0.001206,0.005614));
+        data.put("XLPE 1x1600",Arrays.asList(0.000097,0.001406,0.015765,0.000421,0.000520));
+        data.put("XLPE 1x2000",Arrays.asList(0.000077,0.001363,0.017079,0.000335,0.000504));
+        data.put("ACSR-HAWK 1x240",Arrays.asList(0.000427,0.001348,0.001204,0.000633,0.002813));
+        data.put("Condor-Banked 1x402",Arrays.asList(0.000256,0.001376,0.001254,0.000551,0.002786));
+
 
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -153,8 +168,9 @@ public class ckts {
         String prt = "Part " + String.valueOf(part);
         JLabel partLabel = new JLabel(prt);
         JTextField lnth = new JTextField();
-        JComboBox type = new JComboBox();
-        lnth.setPreferredSize(new Dimension(50, 33));
+        JComboBox type = new JComboBox(data.keySet().toArray());
+
+        lnth.setPreferredSize(new Dimension(40, 33));
 
         parts.add(partLabel);
         parts.add(lnth);
