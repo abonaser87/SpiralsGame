@@ -26,6 +26,7 @@ public class ckts {
     Map<Integer, JCheckBox> dckts = new TreeMap<>();
     Map<Integer, ArrayList> paramters = new TreeMap<>();
     Map<String, List<Double>> data = new TreeMap<String, List<Double>>();
+    Map<String,Integer> mva = new TreeMap<>();
     private int line = 1;
 
     public ckts() {
@@ -43,7 +44,19 @@ public class ckts {
         data.put("XLPE 1x2000",Arrays.asList(0.000077,0.001363,0.017079,0.000335,0.000504));
         data.put("ACSR-HAWK 1x240",Arrays.asList(0.000427,0.001348,0.001204,0.000633,0.002813));
         data.put("Condor-Banked 1x402",Arrays.asList(0.000256,0.001376,0.001254,0.000551,0.002786));
-
+        mva.put("ACSR-CONDOR 1x402 ",151);
+        mva.put("ACSR-CONDOR 2x402 ",274);
+        mva.put("ACSR-HAWK 1x240 ",102);
+        mva.put("GTACSR-CONDOR 1x402 ",274);
+        mva.put("OSTRICH 1x152 ",77);
+        mva.put("XLPE 1x1000 ",187);
+        mva.put("XLPE 1x1200 ",209);
+        mva.put("GTACSR-HAWK 1x240 ",203);
+        mva.put("H-resistance-SAPS 1x282 ",226);
+        mva.put("XLPE 1x1600 ",242);
+        mva.put("XLPE 1x2000 ",267);
+        mva.put("ACSR-HAWK 1x240 ",204);
+        mva.put("Condor-Banked 1x402 ",302);
 
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
