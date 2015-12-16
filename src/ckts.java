@@ -10,21 +10,21 @@ import java.util.List;
  * Created by 84170 on 14/12/2015.
  */
 public class ckts {
-    //TODO: Checkbox data to populate from map?
-    //TODO: Parts map implementation
+    // TODO: Add MVA to the line
+    //TODO: Make a Python format var and store it in a file
     final JFrame frame = new JFrame("lines");
     int part = 1;
     JPanel rootPanel = new JPanel(new BorderLayout(3, 3));
     JPanel substationPanel = new JPanel(new GridLayout(6, 0));
     JPanel transmission = new JPanel(new GridBagLayout());
-    JPanel btns = new JPanel(new GridLayout(0, 2));
+    JPanel btns = new JPanel(new FlowLayout(FlowLayout.CENTER));
     JButton addline = new JButton("Add Line");
     JButton createPython = new JButton("Create Python");
     GridBagConstraints c = new GridBagConstraints();
     Map<Integer, Integer> totalParts = new TreeMap<Integer, Integer>();
     Map<Integer, ArrayList<JTextField>> fromTxt = new TreeMap<>();
     Map<Integer, JCheckBox> dckts = new TreeMap<>();
-    float[] texxt = {1,2,3};
+    Map<Integer, ArrayList> paramters = new TreeMap<>();
     Map<String, List<Double>> data = new TreeMap<String, List<Double>>();
     private int line = 1;
 
@@ -65,24 +65,73 @@ public class ckts {
         createPython.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                System.out.print(totalParts.values());
-//                System.out.print(totalParts.keySet());
-//                System.out.println(fromTxt.values());
-//                System.out.println(fromTxt.keySet());
-                System.out.println(fromTxt.keySet());
-
+                // Get the From and To Text
                 for (Integer key : fromTxt.keySet()) {
                     for (JTextField jTextField : fromTxt.get(key)) {
                         System.out.println(jTextField.getText());
                     }
                 }
+                // Get the Double Circuit check
                 for (Integer key : dckts.keySet()) {
                     System.out.println(dckts.get(key).isSelected());
+                }
+                // Get the parameters and calculate the Length * Type
+                for (Integer key : paramters.keySet()) {
+                    // Temporary Arrays to store the data
+                    ArrayList<List> para = new ArrayList<>();
+                    ArrayList<Double> km = new ArrayList<Double>();
+                    // The first coulmn of the array is the Length and the second is the Type
+                    // This is a for loop to extract each one
+                    for (int i = 0; i < paramters.get(key).size(); i++) {
+                        if (i % 2 == 0 | i == 0) {
+                            System.out.println(((JTextField) paramters.get(key).get(i)).getText());
+                            km.add(Double.valueOf(((JTextField) paramters.get(key).get(i)).getText()));
+                        } else {
+                            System.out.println(data.get(((JComboBox) paramters.get(key).get(i)).getSelectedItem()));
+                            para.add(data.get(((JComboBox) paramters.get(key).get(i)).getSelectedItem()));
+                        }
+                    }
+                    System.out.println(km);
+                    System.out.println(para);
+                    // Calculate the Length * Type for each part
+                    List temp = new ArrayList();
+                    int j = 0;
+                    for (Double aDouble : km) {
+                        // List to store the sum
+                        List test = new ArrayList();
+                        // List to get the paramters
+                        List list = para.get(j);
+                        for (int i = 0; i < list.size(); i++) {
+                            test.add((Double) list.get(i) * aDouble);
+                            //System.out.println(i);
+                        }
+                        j++;
+                        temp.add(test);
+                    }
+
+                    // Store the data in 2D Array to calculate the sum of the parts
+                    double[][] num = new double[temp.size()][5];
+                    for (int i = 0; i < temp.size(); i++) {
+                        List test = (List) temp.get(i);
+                        for (int x = 0; x < test.size(); x++) {
+                            num[i][x] = Double.valueOf(test.get(x).toString());
+                        }
+                    }
+                    // The sum
+                    List parameters = new ArrayList();
+                    for (int i = 0; i < num[0].length; i++) {
+                        double sum = 0;
+                        for (int x = 0; x < num.length; x++) {
+                            sum += num[x][i];
+                        }
+                        parameters.add(sum);
+                    }
+                    System.out.println(parameters);
                 }
             }
         });
         rootPanel.add(substationPanel, BorderLayout.NORTH);
-        rootPanel.add(transmission, BorderLayout.CENTER);
+        rootPanel.add(new JScrollPane(transmission), BorderLayout.CENTER);
         rootPanel.add(btns, BorderLayout.SOUTH);
         addlines(line);
 
@@ -101,11 +150,12 @@ public class ckts {
     private void addlines(final int line) {
         //part=1;
         ArrayList<JTextField> temp = new ArrayList<>();
+        final ArrayList tempParts = new ArrayList<>();
         setPart(1);
         totalParts.put(line, part);
 
         JPanel from = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-        final JPanel parts = new JPanel(new GridLayout(0, 3));
+        final JPanel parts = new JPanel(new GridBagLayout());
         final JPanel btn = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
         // From panel component
         JLabel ckt = new JLabel("Line " + String.valueOf(line));
@@ -146,39 +196,51 @@ public class ckts {
 
                 setPart(totalParts.get(line));
                 part++;
-                addParts(part, line, parts);
+                addParts(part, line, parts, tempParts);
                 frame.pack();
 
             }
         });
-        addParts(part, line, parts);
+        addParts(part, line, parts, tempParts);
         btn.add(addBtn);
 
         c.gridy = 3;
         c.gridx = line - 1;
 
         transmission.add(btn, c);
-        transmission.revalidate();
+        rootPanel.revalidate();
 
     }
 
-    private void addParts(int part, final int line, JPanel parts) {
+    private void addParts(int part, final int line, JPanel parts, ArrayList tempParts) {
         //part++;
         totalParts.put(line, part);
+
         String prt = "Part " + String.valueOf(part);
         JLabel partLabel = new JLabel(prt);
         JTextField lnth = new JTextField();
+        lnth.setMaximumSize(new Dimension(40, 33));
+        lnth.setPreferredSize(new Dimension(40, 33));
         JComboBox type = new JComboBox(data.keySet().toArray());
 
-        lnth.setPreferredSize(new Dimension(40, 33));
+        type.setPreferredSize(new Dimension(150, 33));
+        tempParts.add(lnth);
+        tempParts.add(type);
+        paramters.put(line, tempParts);
+        c.gridy = part;
+        c.gridx = 0;
+        parts.add(partLabel, c);
+        c.gridx = 1;
 
-        parts.add(partLabel);
-        parts.add(lnth);
-        parts.add(type);
+        parts.add(lnth, c);
+        c.gridx = 3;
+        parts.add(type, c);
         c.gridy = 2;
         c.gridx = line - 1;
+        c.weighty = 2;
         transmission.add(parts, c);
-        parts.revalidate();
+        rootPanel.revalidate();
+
 
     }
 
