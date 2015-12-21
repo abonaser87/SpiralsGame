@@ -12,8 +12,7 @@ import java.util.List;
  * Created by 84170 on 14/12/2015.
  */
 public class ckts {
-    // TODO: Delete Button
-    //TODO: Make a Python format var and store it in a file
+
     final JFrame frame = new JFrame("lines");
     int part = 1;
     JPanel rootPanel = new JPanel(new BorderLayout(3, 3));
@@ -28,8 +27,10 @@ public class ckts {
     Map<Integer, ArrayList<JTextField>> fromTxt = new TreeMap<>();
     Map<Integer, JCheckBox> dckts = new TreeMap<>();
     Map<Integer, ArrayList> paramters = new TreeMap<>();
+    Map<Integer, ArrayList> delParts = new TreeMap<>();
     Map<String, List<Double>> data = new TreeMap<>();
     Map<String, Integer> mva = new TreeMap<>();
+    Map<Integer, List> totalLines = new TreeMap<>();
     private int line = 1;
 
     public ckts() {
@@ -70,16 +71,7 @@ public class ckts {
         btns.add(addline);
         btns.add(delline);
         btns.add(createPython);
-        delline.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
 
-
-                dellines(line);
-                line--;
-                frame.pack();
-            }
-        });
         addline.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -88,7 +80,18 @@ public class ckts {
                 frame.pack();
             }
         });
+        delline.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
 
+                dellines(line);
+                line--;
+                if (line == 1) {
+                    delline.setEnabled(false);
+                }
+                frame.pack();
+            }
+        });
         createPython.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -109,7 +112,12 @@ public class ckts {
                     // This is a for loop to extract each one
                     for (int i = 0; i < paramters.get(key).size(); i++) {
                         if (i % 2 == 0 | i == 0) {
-                            km.add(Double.valueOf(((JTextField) paramters.get(key).get(i)).getText()));
+                            try {
+                                km.add(Double.valueOf(((JTextField) paramters.get(key).get(i)).getText()));
+                            } catch (NumberFormatException e1) {
+                                JOptionPane.showMessageDialog(null, "Please enter the Length");
+                                e1.printStackTrace();
+                            }
                         } else {
                             para.add(data.get(((JComboBox) paramters.get(key).get(i)).getSelectedItem()));
                             mvaVal.add(mva.get(((JComboBox) paramters.get(key).get(i)).getSelectedItem()));
@@ -187,6 +195,7 @@ public class ckts {
                 }
             }
         });
+
         rootPanel.add(substationPanel, BorderLayout.NORTH);
         rootPanel.add(new JScrollPane(transmission), BorderLayout.CENTER);
         rootPanel.add(btns, BorderLayout.SOUTH);
@@ -206,14 +215,23 @@ public class ckts {
 
     private void dellines(int line) {
 // Store the containers in a list then delete ?
-//        transmission.remove(line);
-//        transmission.validate();
-//        frame.pack();
+        for (int i = 0; i < totalLines.get(line).size(); i++) {
+            transmission.remove((Component) totalLines.get(line).get(i));
+        }
+        fromTxt.remove(line);
+        paramters.remove(line);
+        dckts.remove(line);
+        transmission.revalidate();
+        rootPanel.validate();
+        frame.pack();
+
     }
 
     private void addlines(final int line) {
-        delline.setEnabled(true);
+
+
         ArrayList<JTextField> temp = new ArrayList<>();
+        final ArrayList tempo = new ArrayList();
         final ArrayList tempParts = new ArrayList<>();
         setPart(1);
         // Correct Number of parts for each circuit
@@ -225,7 +243,7 @@ public class ckts {
         // From panel component
         JLabel ckt = new JLabel("Line " + String.valueOf(line));
         JLabel fromL = new JLabel("From");
-        JTextField txtFrom = new JTextField();
+        final JTextField txtFrom = new JTextField();
         JLabel to = new JLabel("To");
         JTextField txtTo = new JTextField();
         JCheckBox doubleCkts = new JCheckBox("Check if double circuits");
@@ -233,7 +251,7 @@ public class ckts {
         txtTo.setPreferredSize(new Dimension(40, 30));
         c.gridy = 0;
         c.gridx = line - 1;
-        transmission.add(ckt);
+        transmission.add(ckt, c);
         from.add(fromL);
         from.add(txtFrom);
         from.add(to);
@@ -248,36 +266,81 @@ public class ckts {
         temp.add(txtFrom);
         temp.add(txtTo);
         fromTxt.put(line, temp);
-        //temp.clear();
         dckts.put(line, doubleCkts);
 
         // Parts
 
         // Add Part
         final JButton addBtn = new JButton("Add Part");
+        final JButton delBtn = new JButton("Delete Part");
         addBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                delBtn.setEnabled(true);
                 setPart(totalParts.get(line));
                 part++;
-                addParts(part, line, parts, tempParts);
+                addParts(part, line, parts, tempParts, tempo);
                 frame.pack();
 
             }
         });
-        addParts(part, line, parts, tempParts);
-        btn.add(addBtn);
 
+
+        delBtn.setEnabled(false);
+        delBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                setPart(totalParts.get(line));
+                System.out.println(part);
+                int i = (3 * (part - 1));
+                System.out.println(i);
+                parts.remove((Component) delParts.get(line).get(i));
+                parts.remove((Component) delParts.get(line).get(i + 1));
+                parts.remove((Component) delParts.get(line).get(i + 2));
+                int j = delParts.get(line).size();
+                delParts.get(line).remove(j - 1);
+                j = delParts.get(line).size();
+                delParts.get(line).remove(j - 1);
+                j = delParts.get(line).size();
+                delParts.get(line).remove(j - 1);
+                parts.revalidate();
+                int k = paramters.get(line).size();
+                paramters.get(line).remove(k - 1);
+                k = paramters.get(line).size();
+                paramters.get(line).remove(k - 1);
+                transmission.invalidate();
+                part--;
+                totalParts.put(line, part);
+                frame.pack();
+                if (part == 1) {
+                    delBtn.setEnabled(false);
+                }
+
+            }
+        });
+        addParts(part, line, parts, tempParts, tempo);
+        btn.add(addBtn);
+        btn.add(delBtn);
         c.gridy = 3;
         c.gridx = line - 1;
 
         transmission.add(btn, c);
+
+        List tempLines = new ArrayList();
+        if (line != 1) {
+            delline.setEnabled(true);
+            tempLines.add(ckt);
+            tempLines.add(from);
+            tempLines.add(parts);
+            tempLines.add(btn);
+            totalLines.put(line, tempLines);
+        }
+
         rootPanel.revalidate();
 
     }
 
-    private void addParts(int part, final int line, JPanel parts, ArrayList tempParts) {
+    private void addParts(int part, final int line, JPanel parts, ArrayList tempParts, ArrayList tempo) {
         // Correct Number of parts for each circuit
         totalParts.put(line, part);
 
@@ -292,20 +355,28 @@ public class ckts {
         tempParts.add(lnth);
         tempParts.add(type);
         paramters.put(line, tempParts);
+        // Parts to delete
+        tempo.add(partLabel);
+        tempo.add(lnth);
+        tempo.add(type);
+        delParts.put(line, tempo);
+
         c.gridy = part;
         c.gridx = 0;
         parts.add(partLabel, c);
-        c.gridx = 1;
 
+        c.gridx = 1;
         parts.add(lnth, c);
+
         c.gridx = 3;
         parts.add(type, c);
+
         c.gridy = 2;
         c.gridx = line - 1;
         c.weighty = 2;
         transmission.add(parts, c);
         rootPanel.revalidate();
-
+        frame.pack();
 
     }
 
