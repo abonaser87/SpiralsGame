@@ -334,6 +334,8 @@ public class ckts {
                     }
                     for (Integer key : dckts.keySet()) {
                         if (dckts.get(key).isSelected()) {
+                            writer.write("# Connection");
+                            writer.write("\r\n");
                             writer.write(finaldata[key - 1][0] + finaldata[key - 1][1] + finaldata[key - 1][2] + finaldata[key - 1][3]);
                             writer.write("\r\n");
                             writer.write(finaldata[key - 1][4] + finaldata[key - 1][5]);
