@@ -13,10 +13,10 @@ import java.util.List;
  */
 public class ckts {
 
-    final JFrame frame = new JFrame("lines");
+    final JFrame frame = new JFrame("New Substation Python Creator");
     int part = 1;
     JPanel rootPanel = new JPanel(new BorderLayout(3, 3));
-    JPanel substationPanel = new JPanel(new GridLayout(6, 0));
+    JPanel substationPanel = new JPanel(new GridBagLayout());
     JPanel transmission = new JPanel(new GridBagLayout());
     JPanel btns = new JPanel(new FlowLayout(FlowLayout.CENTER));
     JButton addline = new JButton("Add Line");
@@ -67,6 +67,55 @@ public class ckts {
 
         substationPanel.setBorder(new TitledBorder("Substation"));
         transmission.setBorder(new TitledBorder("Transmission Lines"));
+        //Substation
+        JLabel ssName = new JLabel("S/S Name:");
+        JLabel ssNum = new JLabel("S/S Number:");
+        final JTextField txtName = new JTextField();
+        final JTextField txtNum = new JTextField();
+        JLabel zone = new JLabel("Zone Number:");
+        String[] zones = {"110 Qassim", "120 Hail", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
+        final JComboBox zoneNum = new JComboBox(zones);
+        JPanel voltPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel volt = new JLabel("S/S Voltage:");
+        JRadioButton v138 = new JRadioButton("132/13.8kV");
+        v138.setSelected(true);
+        final JRadioButton v33 = new JRadioButton("132/33kV");
+        ButtonGroup voltages = new ButtonGroup();
+        voltages.add(v138);
+        voltages.add(v33);
+        voltPanel.add(volt);
+        voltPanel.add(v138);
+        voltPanel.add(v33);
+        JPanel trfPanels = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel trf = new JLabel("No. of Transformers:");
+        final JRadioButton three = new JRadioButton("Three");
+        JRadioButton two = new JRadioButton("Two");
+        final ButtonGroup transformers = new ButtonGroup();
+        three.setSelected(true);
+        transformers.add(three);
+        transformers.add(two);
+        trfPanels.add(trf);
+        trfPanels.add(three);
+        trfPanels.add(two);
+        JLabel ssLoad = new JLabel("S/S Load:");
+        final JTextField txtLoad = new JTextField();
+        JPanel tempPanel = new JPanel(new GridLayout(4, 2));
+        tempPanel.add(ssNum);
+        tempPanel.add(txtNum);
+        tempPanel.add(ssName);
+        tempPanel.add(txtName);
+        tempPanel.add(zone);
+        tempPanel.add(zoneNum);
+        tempPanel.add(ssLoad);
+        tempPanel.add(txtLoad);
+        c.gridy = 0;
+        substationPanel.add(tempPanel, c);
+        c.gridy = 1;
+        substationPanel.add(voltPanel, c);
+        c.gridy = 2;
+        substationPanel.add(trfPanels, c);
+
+
         delline.setEnabled(false);
         btns.add(addline);
         btns.add(delline);
@@ -172,6 +221,117 @@ public class ckts {
                 // Get the Double Circuit check and write to file
                 try {
                     FileWriter writer = new FileWriter("test2.py", false);
+                    String subName = txtName.getText();
+                    String subNum = txtNum.getText().substring(1);
+                    String[] zNum = zoneNum.getSelectedItem().toString().split(" ");
+                    String[] subLoad = txtLoad.getText().split("\\s+");
+                    String temp = "";
+                    String cc = "1";
+                    if (three.isSelected()) {
+                        if (v33.isSelected()) {
+                            //33kV Three Trfs
+                            if (subLoad.length > 4) {
+                                JOptionPane.showMessageDialog(null, "Please check that you input the correct load");
+                            }
+                            if (zNum[0] == "110" | zNum[0] == "120" | zNum[0] == "150") {
+                                cc = "2";
+                            }
+                            temp = "#Python File for s/s 8717\n" +
+                                    "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9728,-31.72],r\"\"\"Name\"\"\")\n" +
+                                    "psspy.bus_data_2(177171,[_i,100,130,_i],[ 33.0, 0.9367,-38.34],r\"\"\"Name LV-1\"\"\")\n" +
+                                    "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.switched_shunt_data_3(177171,[3,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 10.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 30.0,_f],\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"3\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF3\"\"\")\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"3\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])";
+                            temp = temp.replace("717", subNum);
+                            temp = temp.replace("Name", subName);
+                            temp = temp.replace("130", zNum[0]);
+                            writer.write(temp);
+                            writer.write("\r\n");
+                        } else {
+                            //13.8kV Three Trfs
+                            if (subLoad.length != 8) {
+                                JOptionPane.showMessageDialog(null, "Please check that you input the correct load");
+                            }
+                            if (zNum[0] == "130") {
+                                cc = "2";
+                            }
+                            temp = "#Python File for s/s 8717\n" +
+                                    "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9957,-17.85],r\"\"\"Name\"\"\") \n" +
+                                    "psspy.bus_data_2(177171,[_i,100,130,_i],[ 13.8, 0.9681,-24.87],r\"\"\"Name LV-1\"\"\")\n" +
+                                    "psspy.bus_data_2(177172,[_i,100,130,_i],[ 13.8, 0.9957,-17.85],r\"\"\"Name LV-2\"\"\")\n" +
+                                    "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.load_data_3(177172,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[4] + "," + subLoad[5] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.load_data_3(177172,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[6] + "," + subLoad[7] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 14.0,_f],\"\")\n" +
+                                    "psspy.switched_shunt_data_3(177172,[1,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 7.0,_f],\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
+                                    "psspy.two_winding_data_3(18717,177172,r\"\"\"3\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177172,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.seq_two_winding_data(18717,177172,r\"\"\"3\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])";
+                            temp = temp.replace("717", subNum);
+                            temp = temp.replace("Name", subName);
+                            temp = temp.replace("130", zNum[0]);
+                            writer.write(temp);
+                            writer.write("\r\n");
+                        }
+                    } else {
+                        if (v33.isSelected()) {
+                            //33kV Two Trfs
+                            if (subLoad.length > 4) {
+                                JOptionPane.showMessageDialog(null, "Please check that you input the correct load");
+                            }
+                            if (zNum[0] == "110" | zNum[0] == "120" | zNum[0] == "150") {
+                                cc = "2";
+                            }
+                            temp = "#Python File for s/s 8717\n" +
+                                    "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9728,-31.72],r\"\"\"Name\"\"\")\n" +
+                                    "psspy.bus_data_2(177171,[_i,100,130,_i],[ 33.0, 0.9367,-38.34],r\"\"\"Name LV-1\"\"\")\n" +
+                                    "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 10.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 30.0,_f],\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])";
+                            temp = temp.replace("717", subNum);
+                            temp = temp.replace("Name", subName);
+                            temp = temp.replace("130", zNum[0]);
+                            writer.write(temp);
+                            writer.write("\r\n");
+                        } else {
+                            //13.8kV Two Trfs
+                            if (subLoad.length > 4) {
+                                JOptionPane.showMessageDialog(null, "Please check that you input the correct load");
+                            }
+                            if (zNum[0] == "130") {
+                                cc = "2";
+                            }
+                            temp = "#Python File for s/s 8717\n" +
+                                    "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9957,-17.85],r\"\"\"Name\"\"\") \n" +
+                                    "psspy.bus_data_2(177171,[_i,100,130,_i],[ 13.8, 0.9681,-24.87],r\"\"\"Name LV-1\"\"\")\n" +
+                                    "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
+                                    "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 14.0,_f],\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])";
+                            temp = temp.replace("717", subNum);
+                            temp = temp.replace("Name", subName);
+                            temp = temp.replace("130", zNum[0]);
+                            writer.write(temp);
+                            writer.write("\r\n");
+                        }
+                    }
                     for (Integer key : dckts.keySet()) {
                         if (dckts.get(key).isSelected()) {
                             writer.write(finaldata[key - 1][0] + finaldata[key - 1][1] + finaldata[key - 1][2] + finaldata[key - 1][3]);
