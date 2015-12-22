@@ -239,7 +239,7 @@ public class ckts {
                             if (subLoad.length > 4) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             }
-                            if (zNum[0] == "110" | zNum[0] == "120" | zNum[0] == "150") {
+                            if (zNum[0].equals("110") | zNum[0].equals("120") | zNum[0].equals("150")) {
                                 cc = "2";
                             }
                             temp = "#Python File for s/s 8717\n" +
@@ -264,7 +264,7 @@ public class ckts {
                             if (subLoad.length != 8) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             }
-                            if (zNum[0] == "130") {
+                            if (zNum[0].equals("130")) {
                                 cc = "2";
                             }
                             temp = "#Python File for s/s 8717\n" +
@@ -295,7 +295,7 @@ public class ckts {
                             if (subLoad.length > 4) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             }
-                            if (zNum[0] == "110" | zNum[0] == "120" | zNum[0] == "150") {
+                            if (zNum[0].equals("110") | zNum[0].equals("120") | zNum[0].equals("150")) {
                                 cc = "2";
                             }
                             temp = "#Python File for s/s 8717\n" +
@@ -318,9 +318,11 @@ public class ckts {
                             if (subLoad.length > 4) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             }
-                            if (zNum[0] == "130") {
+                            if (zNum[0].equals("130")) {
                                 cc = "2";
+
                             }
+                            System.out.print(cc);
                             temp = "#Python File for s/s 8717\n" +
                                     "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9957,-17.85],r\"\"\"Name\"\"\") \n" +
                                     "psspy.bus_data_2(177171,[_i,100,130,_i],[ 13.8, 0.9681,-24.87],r\"\"\"Name LV-1\"\"\")\n" +
