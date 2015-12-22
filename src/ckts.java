@@ -3,6 +3,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -69,6 +70,7 @@ public class ckts {
         transmission.setBorder(new TitledBorder("Transmission Lines"));
         //Substation
         JLabel ssName = new JLabel("S/S Name:");
+        JLabel rights = new JLabel("By:Abdullah Al-Othman");
         JLabel ssNum = new JLabel("S/S Number:");
         final JTextField txtName = new JTextField();
         final JTextField txtNum = new JTextField();
@@ -99,7 +101,7 @@ public class ckts {
         trfPanels.add(two);
         JLabel ssLoad = new JLabel("S/S Load:");
         final JTextField txtLoad = new JTextField();
-        JPanel tempPanel = new JPanel(new GridLayout(4, 2));
+        JPanel tempPanel = new JPanel(new GridLayout(4, 2, 5, 5));
         tempPanel.add(ssNum);
         tempPanel.add(txtNum);
         tempPanel.add(ssName);
@@ -108,6 +110,7 @@ public class ckts {
         tempPanel.add(zoneNum);
         tempPanel.add(ssLoad);
         tempPanel.add(txtLoad);
+
         c.gridy = 0;
         substationPanel.add(tempPanel, c);
         c.gridy = 1;
@@ -120,7 +123,7 @@ public class ckts {
         btns.add(addline);
         btns.add(delline);
         btns.add(createPython);
-
+        btns.add(rights);
         addline.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -164,7 +167,7 @@ public class ckts {
                             try {
                                 km.add(Double.valueOf(((JTextField) paramters.get(key).get(i)).getText()));
                             } catch (NumberFormatException e1) {
-                                JOptionPane.showMessageDialog(null, "Please enter the Length");
+                                JOptionPane.showMessageDialog(rootPanel, "Please enter the Length");
                                 e1.printStackTrace();
                             }
                         } else {
@@ -220,7 +223,10 @@ public class ckts {
                 }
                 // Get the Double Circuit check and write to file
                 try {
-                    FileWriter writer = new FileWriter("test2.py", false);
+
+                    String userHomeFolder = System.getProperty("user.home");
+                    File textFile = new File(userHomeFolder + "/Desktop", txtNum.getText() + " Substation.py");
+                    FileWriter writer = new FileWriter(textFile, false);
                     String subName = txtName.getText();
                     String subNum = txtNum.getText().substring(1);
                     String[] zNum = zoneNum.getSelectedItem().toString().split(" ");
@@ -231,7 +237,7 @@ public class ckts {
                         if (v33.isSelected()) {
                             //33kV Three Trfs
                             if (subLoad.length > 4) {
-                                JOptionPane.showMessageDialog(null, "Please check that you input the correct load");
+                                JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             }
                             if (zNum[0] == "110" | zNum[0] == "120" | zNum[0] == "150") {
                                 cc = "2";
@@ -256,7 +262,7 @@ public class ckts {
                         } else {
                             //13.8kV Three Trfs
                             if (subLoad.length != 8) {
-                                JOptionPane.showMessageDialog(null, "Please check that you input the correct load");
+                                JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             }
                             if (zNum[0] == "130") {
                                 cc = "2";
@@ -287,7 +293,7 @@ public class ckts {
                         if (v33.isSelected()) {
                             //33kV Two Trfs
                             if (subLoad.length > 4) {
-                                JOptionPane.showMessageDialog(null, "Please check that you input the correct load");
+                                JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             }
                             if (zNum[0] == "110" | zNum[0] == "120" | zNum[0] == "150") {
                                 cc = "2";
@@ -310,7 +316,7 @@ public class ckts {
                         } else {
                             //13.8kV Two Trfs
                             if (subLoad.length > 4) {
-                                JOptionPane.showMessageDialog(null, "Please check that you input the correct load");
+                                JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             }
                             if (zNum[0] == "130") {
                                 cc = "2";
@@ -331,6 +337,8 @@ public class ckts {
                             writer.write(temp);
                             writer.write("\r\n");
                         }
+                        writer.write("# Connection");
+                        writer.write("\r\n");
                     }
                     for (Integer key : dckts.keySet()) {
                         if (dckts.get(key).isSelected()) {
@@ -352,6 +360,7 @@ public class ckts {
                         }
                     }
                     writer.close();
+                    JOptionPane.showMessageDialog(rootPanel, "Done , The file is saved on the Desktop");
                 } catch (IOException ie) {
                     ie.printStackTrace();
                 }
@@ -368,10 +377,33 @@ public class ckts {
         frame.setMinimumSize(frame.getSize());
         frame.pack();
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
 
     }
 
+    public static void setUIFont(javax.swing.plaf.FontUIResource f) {
+        java.util.Enumeration keys = UIManager.getDefaults().keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = UIManager.get(key);
+            if (value != null && value instanceof javax.swing.plaf.FontUIResource)
+                UIManager.put(key, f);
+        }
+    }
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+            setUIFont(new javax.swing.plaf.FontUIResource(Font.SANS_SERIF, Font.PLAIN, 14));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
         ckts test = new ckts();
     }
 
@@ -497,8 +529,10 @@ public class ckts {
             tempLines.add(btn);
             totalLines.put(line, tempLines);
         }
-
-        rootPanel.revalidate();
+        transmission.revalidate();
+        rootPanel.invalidate();
+        rootPanel.repaint();
+        frame.pack();
 
     }
 
@@ -509,11 +543,11 @@ public class ckts {
         String prt = "Part " + String.valueOf(part);
         JLabel partLabel = new JLabel(prt);
         JTextField lnth = new JTextField();
-        lnth.setMaximumSize(new Dimension(40, 33));
-        lnth.setPreferredSize(new Dimension(40, 33));
+        lnth.setMaximumSize(new Dimension(40, 30));
+        lnth.setPreferredSize(new Dimension(40, 30));
         JComboBox type = new JComboBox(data.keySet().toArray());
 
-        type.setPreferredSize(new Dimension(150, 33));
+        type.setPreferredSize(new Dimension(180, 30));
         tempParts.add(lnth);
         tempParts.add(type);
         paramters.put(line, tempParts);
@@ -524,6 +558,7 @@ public class ckts {
         delParts.put(line, tempo);
 
         c.gridy = part;
+        c.insets = new Insets(5, 5, 5, 5);
         c.gridx = 0;
         parts.add(partLabel, c);
 
@@ -550,4 +585,3 @@ public class ckts {
         this.part = part;
     }
 }
-
