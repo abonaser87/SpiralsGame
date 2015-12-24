@@ -1,11 +1,14 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
@@ -70,7 +73,8 @@ public class ckts {
         transmission.setBorder(new TitledBorder("Transmission Lines"));
         //Substation
         JLabel ssName = new JLabel("S/S Name:");
-        JLabel rights = new JLabel("By:Abdullah Al-Othman");
+        JLabel rights = new JLabel("By:A.Al-Othman");
+        rights.setFont(new javax.swing.plaf.FontUIResource(Font.SANS_SERIF, Font.PLAIN, 10));
         JLabel ssNum = new JLabel("S/S Number:");
         final JTextField txtName = new JTextField();
         final JTextField txtNum = new JTextField();
@@ -151,8 +155,16 @@ public class ckts {
                 String[][] finaldata = new String[fromTxt.size()][6];
                 // Get the From and To Text
                 for (Integer key : fromTxt.keySet()) {
-                    finaldata[key - 1][0] = "psspy.branch_data(1" + fromTxt.get(key).get(0).getText() + ",1" + fromTxt.get(key).get(1).getText() + ",r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i],";
-                    finaldata[key - 1][4] = "psspy.seq_branch_data(1" + fromTxt.get(key).get(0).getText() + ",1" + fromTxt.get(key).get(1).getText() + ",r\"\"\"1\"\"\",";
+                    String from = fromTxt.get(key).get(0).getText();
+                    String to = fromTxt.get(key).get(1).getText();
+                    if (from.startsWith("9")) {
+                        from = "19" + from.substring(2);
+                    }
+                    if (to.startsWith("9")) {
+                        to = "19" + to.substring(2);
+                    }
+                    finaldata[key - 1][0] = "psspy.branch_data(1" + from + ",1" + to + ",r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i],";
+                    finaldata[key - 1][4] = "psspy.seq_branch_data(1" + from + ",1" + to + ",r\"\"\"1\"\"\",";
                 }
                 // Get the parameters and calculate the Length * Type
                 for (Integer key : paramters.keySet()) {
@@ -228,7 +240,12 @@ public class ckts {
                     File textFile = new File(userHomeFolder + "/Desktop", txtNum.getText() + " Substation.py");
                     FileWriter writer = new FileWriter(textFile, false);
                     String subName = txtName.getText();
-                    String subNum = txtNum.getText().substring(1);
+                    String subNum = txtNum.getText();
+                    if (subNum.startsWith("1")) {
+                        subNum = subNum.substring(2);
+                    } else {
+                        subNum = subNum.substring(1);
+                    }
                     String[] zNum = zoneNum.getSelectedItem().toString().split(" ");
                     String[] subLoad = txtLoad.getText().split("\\s+");
                     String temp = "";
@@ -248,11 +265,11 @@ public class ckts {
                                     "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
                                     "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
                                     "psspy.switched_shunt_data_3(177171,[3,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 10.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 30.0,_f],\"\")\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"3\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF3\"\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"3\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF3\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"3\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])";
                             temp = temp.replace("717", subNum);
                             temp = temp.replace("Name", subName);
@@ -277,11 +294,11 @@ public class ckts {
                                     "psspy.load_data_3(177172,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[6] + "," + subLoad[7] + ",_f,_f,_f,_f])\n" +
                                     "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 14.0,_f],\"\")\n" +
                                     "psspy.switched_shunt_data_3(177172,[1,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 7.0,_f],\"\")\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177172,r\"\"\"3\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177172,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.two_winding_data_3(18717,177172,r\"\"\"3\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177172,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF3\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177172,r\"\"\"3\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])";
                             temp = temp.replace("717", subNum);
                             temp = temp.replace("Name", subName);
@@ -304,9 +321,9 @@ public class ckts {
                                     "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
                                     "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
                                     "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 10.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 30.0,_f],\"\")\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f, 1.5, 0.51, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])";
                             temp = temp.replace("717", subNum);
                             temp = temp.replace("Name", subName);
@@ -329,9 +346,9 @@ public class ckts {
                                     "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
                                     "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
                                     "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 14.0,_f],\"\")\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],_s)\n" +
+                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
                                     "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])";
                             temp = temp.replace("717", subNum);
                             temp = temp.replace("Name", subName);
@@ -339,13 +356,11 @@ public class ckts {
                             writer.write(temp);
                             writer.write("\r\n");
                         }
-                        writer.write("# Connection");
-                        writer.write("\r\n");
                     }
+                    writer.write("# Connection");
+                    writer.write("\r\n");
                     for (Integer key : dckts.keySet()) {
                         if (dckts.get(key).isSelected()) {
-                            writer.write("# Connection");
-                            writer.write("\r\n");
                             writer.write(finaldata[key - 1][0] + finaldata[key - 1][1] + finaldata[key - 1][2] + finaldata[key - 1][3]);
                             writer.write("\r\n");
                             writer.write(finaldata[key - 1][4] + finaldata[key - 1][5]);
@@ -378,6 +393,14 @@ public class ckts {
         rootPanel.repaint();
         frame.setMinimumSize(frame.getSize());
         frame.pack();
+        String imagePath = "Ico.png";
+        InputStream imgStream = ckts.class.getResourceAsStream(imagePath);
+        try {
+            BufferedImage myImg = ImageIO.read(imgStream);
+            frame.setIconImage(myImg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
 
@@ -393,6 +416,7 @@ public class ckts {
         }
     }
     public static void main(String[] args) {
+
         try {
             UIManager.setLookAndFeel(
                     UIManager.getSystemLookAndFeelClassName());
