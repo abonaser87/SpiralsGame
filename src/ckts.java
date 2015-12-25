@@ -35,43 +35,28 @@ public class ckts {
     Map<String, List<Double>> data = new TreeMap<>();
     Map<String, Integer> mva = new TreeMap<>();
     Map<Integer, List> totalLines = new TreeMap<>();
+    String area;
+    String[] zones = {"110 Qassim", "120 Hail", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
+    String[] voltage;
     private int line = 1;
 
     public ckts() {
 
-        data.put("ACSR-CONDOR 1x402", Arrays.asList(0.0005125115, 0.0027525253, 0.0006271000, 0.0011025023, 0.0055727732));
-        data.put("ACSR-CONDOR 2x402", Arrays.asList(0.0002565427, 0.0017952250, 0.0008966069, 0.0009808310, 0.0051733242));
-        data.put("ACSR-HAWK 1x240", Arrays.asList(0.0008545684, 0.0026968549, 0.0006019419, 0.0012654959, 0.0056250000));
-        data.put("GTACSR-CONDOR 1x402", Arrays.asList(0.0005125115, 0.0027525253, 0.0006271000, 0.0014135675, 0.0068514692));
-        data.put("OSTRICH 1x152", Arrays.asList(0.0013584711, 0.0027967172, 0.0005797332, 0.0015048209, 0.0056749311));
-        data.put("XLPE 1x1000", Arrays.asList(0.0001342975, 0.0014834711, 0.0137870014, 0.0005624426, 0.0005809803));
-        data.put("XLPE 1x1200", Arrays.asList(0.0001033058, 0.0014261938, 0.0151937280, 0.0004612029, 0.0004951217));
-        data.put("GTACSR-HAWK 1x240", Arrays.asList(0.0008545684, 0.0026968549, 0.0006019419, 0.0012654959, 0.0056250000));
-        data.put("H-resistance-SAPS 1x282", Arrays.asList(0.0007300275, 0.0026750459, 0.0006069407, 0.0012058081, 0.0056140955));
-        data.put("XLPE 1x1600", Arrays.asList(0.0000972796, 0.0014063603, 0.0157648638, 0.0004208549, 0.0005195086));
-        data.put("XLPE 1x2000", Arrays.asList(0.0000774793, 0.0013630877, 0.0170786024, 0.0003351942, 0.0005035237));
-        data.put("Banked-HAWK 1x240", Arrays.asList(0.0004272842, 0.0013484275, 0.0012038838, 0.0006327479, 0.0028125000));
-        data.put("Banked-Condor 1x402", Arrays.asList(0.0002562557, 0.0013762626, 0.0012542000, 0.0005512511, 0.0027863866));
-        mva.put("ACSR-CONDOR 1x402", 151);
-        mva.put("ACSR-CONDOR 2x402", 274);
-        mva.put("ACSR-HAWK 1x240", 102);
-        mva.put("GTACSR-CONDOR 1x402", 274);
-        mva.put("OSTRICH 1x152", 77);
-        mva.put("XLPE 1x1000", 187);
-        mva.put("XLPE 1x1200", 209);
-        mva.put("GTACSR-HAWK 1x240", 203);
-        mva.put("H-resistance-SAPS 1x282", 226);
-        mva.put("XLPE 1x1600", 242);
-        mva.put("XLPE 1x2000", 267);
-        mva.put("Banked-HAWK 1x240", 204);
-        mva.put("Banked-Condor 1x402", 302);
 
+        DefaultComboBoxModel zoneModel = new DefaultComboBoxModel(zones);
+        data = new COA().data();
+        mva = new COA().mva();
+
+        voltage = new COA().voltage();
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         substationPanel.setBorder(new TitledBorder("Substation"));
         transmission.setBorder(new TitledBorder("Transmission Lines"));
         //Substation
+        JLabel areas = new JLabel("Area:");
+        String[] areaArray = {"100 COA", "200 WOA", "300 EOA", "400 SOA"};
+        final JComboBox areaNum = new JComboBox(areaArray);
         JLabel ssName = new JLabel("S/S Name:");
         JLabel rights = new JLabel("By:A.Al-Othman");
         rights.setFont(new javax.swing.plaf.FontUIResource(Font.SANS_SERIF, Font.PLAIN, 10));
@@ -79,11 +64,10 @@ public class ckts {
         final JTextField txtName = new JTextField();
         final JTextField txtNum = new JTextField();
         JLabel zone = new JLabel("Zone Number:");
-        String[] zones = {"110 Qassim", "120 Hail", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
-        final JComboBox zoneNum = new JComboBox(zones);
+        final JComboBox zoneNum = new JComboBox(zoneModel);
         JPanel voltPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel volt = new JLabel("S/S Voltage:");
-        JRadioButton v138 = new JRadioButton("132/13.8kV");
+        final JRadioButton v138 = new JRadioButton(voltage[0]);
         v138.setSelected(true);
         final JRadioButton v33 = new JRadioButton("132/33kV");
         ButtonGroup voltages = new ButtonGroup();
@@ -105,7 +89,9 @@ public class ckts {
         trfPanels.add(two);
         JLabel ssLoad = new JLabel("S/S Load:");
         final JTextField txtLoad = new JTextField();
-        JPanel tempPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        JPanel tempPanel = new JPanel(new GridLayout(5, 2, 5, 5));
+        tempPanel.add(areas);
+        tempPanel.add(areaNum);
         tempPanel.add(ssNum);
         tempPanel.add(txtNum);
         tempPanel.add(ssName);
@@ -128,6 +114,64 @@ public class ckts {
         btns.add(delline);
         btns.add(createPython);
         btns.add(rights);
+        // Areas
+        areaNum.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String[] zoneS;
+                switch (areaNum.getSelectedIndex()) {
+                    case 0:
+                        area = new COA().area();
+                        zoneS = new COA().zone();
+                        DefaultComboBoxModel coa = new DefaultComboBoxModel(zoneS);
+                        zoneNum.setModel(coa);
+                        data = new COA().data();
+                        mva = new COA().mva();
+                        voltage = new COA().voltage();
+                        v138.setText(voltage[0]);
+                        v33.setText(voltage[1]);
+                        removeall();
+                        break;
+                    case 1:
+                        area = new WOA().area();
+                        zoneS = new WOA().zone();
+                        DefaultComboBoxModel woa = new DefaultComboBoxModel(zoneS);
+                        zoneNum.setModel(woa);
+                        data = new WOA().data();
+                        mva = new WOA().mva();
+                        voltage = new WOA().voltage();
+                        v138.setText(voltage[0]);
+                        v33.setText(voltage[1]);
+                        removeall();
+                        break;
+                    case 2:
+                        area = new EOA().area();
+                        zoneS = new EOA().zone();
+                        DefaultComboBoxModel eoa = new DefaultComboBoxModel(zoneS);
+                        zoneNum.setModel(eoa);
+                        data = new EOA().data();
+                        mva = new EOA().mva();
+                        voltage = new EOA().voltage();
+                        v138.setText(voltage[0]);
+                        v33.setText(voltage[1]);
+                        removeall();
+                        break;
+                    case 3:
+                        area = new SOA().area();
+                        zoneS = new SOA().zone();
+                        DefaultComboBoxModel soa = new DefaultComboBoxModel(zoneS);
+                        zoneNum.setModel(soa);
+                        data = new SOA().data();
+                        mva = new SOA().mva();
+                        voltage = new SOA().voltage();
+                        v138.setText(voltage[0]);
+                        v33.setText(voltage[1]);
+                        removeall();
+                        break;
+                }
+            }
+        });
         addline.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -317,7 +361,7 @@ public class ckts {
                             }
                             temp = "#Python File for s/s 8717\n" +
                                     "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9728,-31.72],r\"\"\"Name\"\"\")\n" +
-                                    "psspy.bus_data_2(177171,[_i,100,130,_i],[ 33.0, 0.9367,-38.34],r\"\"\"Name LV-1\"\"\")\n" +
+                                    "psspy.bus_data_2(177171,5[_i,100,130,_i],[ 33.0, 0.9367,-38.34],r\"\"\"Name LV-1\"\"\")\n" +
                                     "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
                                     "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
                                     "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 10.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 30.0,_f],\"\")\n" +
@@ -415,6 +459,7 @@ public class ckts {
                 UIManager.put(key, f);
         }
     }
+
     public static void main(String[] args) {
 
         try {
@@ -431,6 +476,16 @@ public class ckts {
             e.printStackTrace();
         }
         ckts test = new ckts();
+    }
+
+    private void removeall() {
+        fromTxt.clear();
+        paramters.clear();
+        dckts.clear();
+        transmission.removeAll();
+        line = 1;
+        addlines(line);
+        rootPanel.revalidate();
     }
 
     private void dellines(int line) {
