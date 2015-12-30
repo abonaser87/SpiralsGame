@@ -44,10 +44,10 @@ public class ckts {
 
 
         DefaultComboBoxModel zoneModel = new DefaultComboBoxModel(zones);
-        data = new COA().data();
-        mva = new COA().mva();
+        data = new AreaFactory().checkarea(0).data();
+        mva = new AreaFactory().checkarea(0).mva();
 
-        voltage = new COA().voltage();
+        voltage = new AreaFactory().checkarea(0).voltage();
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -120,56 +120,17 @@ public class ckts {
             public void actionPerformed(ActionEvent e) {
 
                 String[] zoneS;
-                switch (areaNum.getSelectedIndex()) {
-                    case 0:
-                        area = new COA().area();
-                        zoneS = new COA().zone();
-                        DefaultComboBoxModel coa = new DefaultComboBoxModel(zoneS);
-                        zoneNum.setModel(coa);
-                        data = new COA().data();
-                        mva = new COA().mva();
-                        voltage = new COA().voltage();
-                        v138.setText(voltage[0]);
-                        v33.setText(voltage[1]);
-                        removeall();
-                        break;
-                    case 1:
-                        area = new WOA().area();
-                        zoneS = new WOA().zone();
-                        DefaultComboBoxModel woa = new DefaultComboBoxModel(zoneS);
-                        zoneNum.setModel(woa);
-                        data = new WOA().data();
-                        mva = new WOA().mva();
-                        voltage = new WOA().voltage();
-                        v138.setText(voltage[0]);
-                        v33.setText(voltage[1]);
-                        removeall();
-                        break;
-                    case 2:
-                        area = new EOA().area();
-                        zoneS = new EOA().zone();
-                        DefaultComboBoxModel eoa = new DefaultComboBoxModel(zoneS);
-                        zoneNum.setModel(eoa);
-                        data = new EOA().data();
-                        mva = new EOA().mva();
-                        voltage = new EOA().voltage();
-                        v138.setText(voltage[0]);
-                        v33.setText(voltage[1]);
-                        removeall();
-                        break;
-                    case 3:
-                        area = new SOA().area();
-                        zoneS = new SOA().zone();
-                        DefaultComboBoxModel soa = new DefaultComboBoxModel(zoneS);
-                        zoneNum.setModel(soa);
-                        data = new SOA().data();
-                        mva = new SOA().mva();
-                        voltage = new SOA().voltage();
-                        v138.setText(voltage[0]);
-                        v33.setText(voltage[1]);
-                        removeall();
-                        break;
-                }
+                Data factory = new AreaFactory().checkarea(areaNum.getSelectedIndex());
+                area = factory.area();
+                zoneS = factory.zone();
+                DefaultComboBoxModel coa = new DefaultComboBoxModel(zoneS);
+                zoneNum.setModel(coa);
+                data = factory.data();
+                mva = factory.mva();
+                voltage = factory.voltage();
+                v138.setText(voltage[0]);
+                v33.setText(voltage[1]);
+                removeall();
             }
         });
         addline.addActionListener(new ActionListener() {
@@ -285,120 +246,55 @@ public class ckts {
                     FileWriter writer = new FileWriter(textFile, false);
                     String subName = txtName.getText();
                     String subNum = txtNum.getText();
-                    if (subNum.startsWith("1")) {
-                        subNum = subNum.substring(2);
-                    } else {
-                        subNum = subNum.substring(1);
-                    }
                     String[] zNum = zoneNum.getSelectedItem().toString().split(" ");
                     String[] subLoad = txtLoad.getText().split("\\s+");
                     String temp = "";
-                    String cc = "1";
+
                     if (three.isSelected()) {
                         if (v33.isSelected()) {
                             //33kV Three Trfs
                             if (subLoad.length > 4) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
-                            }
-                            if (zNum[0].equals("110") | zNum[0].equals("120") | zNum[0].equals("150")) {
-                                cc = "2";
-                            }
-                            temp = "#Python File for s/s 8717\n" +
-                                    "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9728,-31.72],r\"\"\"Name\"\"\")\n" +
-                                    "psspy.bus_data_2(177171,[_i,100,130,_i],[ 33.0, 0.9367,-38.34],r\"\"\"Name LV-1\"\"\")\n" +
-                                    "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.switched_shunt_data_3(177171,[3,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 10.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 30.0,_f],\"\")\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"3\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF3\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"3\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])";
-                            temp = temp.replace("717", subNum);
+
+                            } else {
+                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), zNum[0], subLoad, subNum).v33T3();
                             temp = temp.replace("Name", subName);
-                            temp = temp.replace("130", zNum[0]);
                             writer.write(temp);
-                            writer.write("\r\n");
+                                writer.write("\r\n");
+                            }
                         } else {
                             //13.8kV Three Trfs
                             if (subLoad.length != 8) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
+                            } else {
+                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), zNum[0], subLoad, subNum).v13T3();
+                                temp = temp.replace("Name", subName);
+                                writer.write(temp);
+                                writer.write("\r\n");
                             }
-                            if (zNum[0].equals("130")) {
-                                cc = "2";
-                            }
-                            temp = "#Python File for s/s 8717\n" +
-                                    "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9957,-17.85],r\"\"\"Name\"\"\") \n" +
-                                    "psspy.bus_data_2(177171,[_i,100,130,_i],[ 13.8, 0.9681,-24.87],r\"\"\"Name LV-1\"\"\")\n" +
-                                    "psspy.bus_data_2(177172,[_i,100,130,_i],[ 13.8, 0.9957,-17.85],r\"\"\"Name LV-2\"\"\")\n" +
-                                    "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.load_data_3(177172,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[4] + "," + subLoad[5] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.load_data_3(177172,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[6] + "," + subLoad[7] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 14.0,_f],\"\")\n" +
-                                    "psspy.switched_shunt_data_3(177172,[1,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 7.0,_f],\"\")\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177172,r\"\"\"3\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177172,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF3\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177172,r\"\"\"3\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])";
-                            temp = temp.replace("717", subNum);
-                            temp = temp.replace("Name", subName);
-                            temp = temp.replace("130", zNum[0]);
-                            writer.write(temp);
-                            writer.write("\r\n");
                         }
+                        // Two Transformers
                     } else {
                         if (v33.isSelected()) {
                             //33kV Two Trfs
                             if (subLoad.length > 4) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
+                            } else {
+                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), zNum[0], subLoad, subNum).v33T2();
+                                temp = temp.replace("Name", subName);
+                                writer.write(temp);
+                                writer.write("\r\n");
                             }
-                            if (zNum[0].equals("110") | zNum[0].equals("120") | zNum[0].equals("150")) {
-                                cc = "2";
-                            }
-                            temp = "#Python File for s/s 8717\n" +
-                                    "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9728,-31.72],r\"\"\"Name\"\"\")\n" +
-                                    "psspy.bus_data_2(177171,5[_i,100,130,_i],[ 33.0, 0.9367,-38.34],r\"\"\"Name LV-1\"\"\")\n" +
-                                    "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 10.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 30.0,_f],\"\")\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,1,_i,_i,_i],[_f, 0.175,_f,_f,_f,_f,_f,_f, 100.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.175,_f,_f])";
-                            temp = temp.replace("717", subNum);
-                            temp = temp.replace("Name", subName);
-                            temp = temp.replace("130", zNum[0]);
-                            writer.write(temp);
-                            writer.write("\r\n");
                         } else {
                             //13.8kV Two Trfs
                             if (subLoad.length > 4) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
+                            } else {
+                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), zNum[0], subLoad, subNum).v13T2();
+                                temp = temp.replace("Name", subName);
+                                writer.write(temp);
+                                writer.write("\r\n");
                             }
-                            if (zNum[0].equals("130")) {
-                                cc = "2";
-
-                            }
-                            System.out.print(cc);
-                            temp = "#Python File for s/s 8717\n" +
-                                    "psspy.bus_data_2(18717,[_i,100,130,_i],[ 132.0, 0.9957,-17.85],r\"\"\"Name\"\"\") \n" +
-                                    "psspy.bus_data_2(177171,[_i,100,130,_i],[ 13.8, 0.9681,-24.87],r\"\"\"Name LV-1\"\"\")\n" +
-                                    "psspy.load_data_3(177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[0] + "," + subLoad[1] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.load_data_3(177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i],[ " + subLoad[2] + "," + subLoad[3] + ",_f,_f,_f,_f])\n" +
-                                    "psspy.switched_shunt_data_3(177171,[2,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i,_i],[ 7.0,_f,_f,_f,_f,_f,_f,_f, 1.05,_f, 14.0,_f],\"\")\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"1\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF1\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"1\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])\n" +
-                                    "psspy.two_winding_data_3(18717,177171,r\"\"\"2\"\"\",[_i,_i,_i,_i,_i,_i,_i,_i,18717,177171,_i,0,_i,_i,_i],[_f, 0.44,_f,_f,_f,_f,_f,_f, 67.0,_f,_f,_f,_f,_f,_f,_f,_f,_f,_f, 1.05, 0.95,_f,_f,_f],r\"\"\"TF2\"\"\")\n" +
-                                    "psspy.seq_two_winding_data(18717,177171,r\"\"\"2\"\"\"," + cc + ",[_f,_f,_f, 0.44,_f,_f])";
-                            temp = temp.replace("717", subNum);
-                            temp = temp.replace("Name", subName);
-                            temp = temp.replace("130", zNum[0]);
-                            writer.write(temp);
-                            writer.write("\r\n");
                         }
                     }
                     writer.write("# Connection");
@@ -572,6 +468,7 @@ public class ckts {
                 parts.remove((Component) delParts.get(line).get(i));
                 parts.remove((Component) delParts.get(line).get(i + 1));
                 parts.remove((Component) delParts.get(line).get(i + 2));
+                // can we use linked list here as it will be easier ?
                 int j = delParts.get(line).size();
                 delParts.get(line).remove(j - 1);
                 j = delParts.get(line).size();

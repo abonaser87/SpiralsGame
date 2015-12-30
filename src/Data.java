@@ -9,6 +9,7 @@ import java.util.TreeMap;
 public interface Data {
     // Area , Zone , Voltage
     //  Python Class
+
     String area();
 
     String[] zone();
