@@ -12,9 +12,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
-/**
- * Created by 84170 on 14/12/2015.
- */
+
 public class ckts {
 
     final JFrame frame = new JFrame("New Substation Python Creator");
@@ -27,14 +25,14 @@ public class ckts {
     JButton delline = new JButton("Delete Line");
     JButton createPython = new JButton("Create Python");
     GridBagConstraints c = new GridBagConstraints();
-    Map<Integer, Integer> totalParts = new TreeMap<>();
-    Map<Integer, ArrayList<JTextField>> fromTxt = new TreeMap<>();
-    Map<Integer, JCheckBox> dckts = new TreeMap<>();
-    Map<Integer, ArrayList> paramters = new TreeMap<>();
-    Map<Integer, ArrayList> delParts = new TreeMap<>();
-    Map<String, List<Double>> data = new TreeMap<>();
-    Map<String, Integer> mva = new TreeMap<>();
-    Map<Integer, List> totalLines = new TreeMap<>();
+    Map<Integer, Integer> totalParts = new TreeMap<Integer, Integer>();
+    Map<Integer, ArrayList<JTextField>> fromTxt = new TreeMap<Integer, ArrayList<JTextField>>();
+    Map<Integer, JCheckBox> dckts = new TreeMap<Integer, JCheckBox>();
+    Map<Integer, ArrayList> paramters = new TreeMap<Integer, ArrayList>();
+    Map<Integer, ArrayList> delParts = new TreeMap<Integer, ArrayList>();
+    Map<String, List<Double>> data = new TreeMap<String, List<Double>>();
+    Map<String, Integer> mva = new TreeMap<String, Integer>();
+    Map<Integer, List> totalLines = new TreeMap<Integer, List>();
     private int line = 1;
 
     public ckts() {
@@ -45,6 +43,7 @@ public class ckts {
         data.put("GTACSR-CONDOR 1x402", Arrays.asList(0.0005125115, 0.0027525253, 0.0006271000, 0.0014135675, 0.0068514692));
         data.put("OSTRICH 1x152", Arrays.asList(0.0013584711, 0.0027967172, 0.0005797332, 0.0015048209, 0.0056749311));
         data.put("XLPE 1x1000", Arrays.asList(0.0001342975, 0.0014834711, 0.0137870014, 0.0005624426, 0.0005809803));
+        data.put("SAPSUCKER 1x282", Arrays.asList(0.0007300275, 0.0028351699, 0.0005714763, 0.0016299357, 0.0069444444));
         data.put("XLPE 1x1200", Arrays.asList(0.0001033058, 0.0014261938, 0.0151937280, 0.0004612029, 0.0004951217));
         data.put("GTACSR-HAWK 1x240", Arrays.asList(0.0008545684, 0.0026968549, 0.0006019419, 0.0012654959, 0.0056250000));
         data.put("H-resistance-SAPS 1x282", Arrays.asList(0.0007300275, 0.0026750459, 0.0006069407, 0.0012058081, 0.0056140955));
@@ -61,6 +60,7 @@ public class ckts {
         mva.put("XLPE 1x1200", 209);
         mva.put("GTACSR-HAWK 1x240", 203);
         mva.put("H-resistance-SAPS 1x282", 226);
+        mva.put("SAPSUCKER 1x282", 111);
         mva.put("XLPE 1x1600", 242);
         mva.put("XLPE 1x2000", 267);
         mva.put("Banked-HAWK 1x240", 204);
@@ -169,9 +169,9 @@ public class ckts {
                 // Get the parameters and calculate the Length * Type
                 for (Integer key : paramters.keySet()) {
                     // Temporary Arrays to store the data
-                    ArrayList<List> para = new ArrayList<>();
-                    ArrayList<Double> km = new ArrayList<>();
-                    ArrayList<Integer> mvaVal = new ArrayList<>();
+                    ArrayList<List> para = new ArrayList<List>();
+                    ArrayList<Double> km = new ArrayList<Double>();
+                    ArrayList<Integer> mvaVal = new ArrayList<Integer>();
                     // The first column of the array is the Length and the second is the Type
                     // This is a for loop to extract each one
                     for (int i = 0; i < paramters.get(key).size(); i++) {
@@ -450,9 +450,9 @@ public class ckts {
     private void addlines(final int line) {
 
 
-        ArrayList<JTextField> temp = new ArrayList<>();
+        ArrayList<JTextField> temp = new ArrayList<JTextField>();
         final ArrayList tempo = new ArrayList();
-        final ArrayList tempParts = new ArrayList<>();
+        final ArrayList tempParts = new ArrayList();
         setPart(1);
         // Correct Number of parts for each circuit
         totalParts.put(line, part);
