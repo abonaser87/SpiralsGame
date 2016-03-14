@@ -27,15 +27,15 @@ public class ckts {
     JButton delline = new JButton("Delete Line");
     JButton createPython = new JButton("Create Python");
     GridBagConstraints c = new GridBagConstraints();
-    Map<Integer, Integer> totalParts = new TreeMap<>();
-    Map<Integer, ArrayList<JTextField>> fromTxt = new TreeMap<>();
-    Map<Integer, JCheckBox> dckts = new TreeMap<>();
-    Map<Integer, ArrayList> paramters = new TreeMap<>();
-    Map<Integer, ArrayList> delParts = new TreeMap<>();
-    Map<String, List<Double>> data = new TreeMap<>();
-    Map<String, Integer> mva = new TreeMap<>();
-    Map<Integer, List> totalLines = new TreeMap<>();
-    String area;
+    Map<Integer, Integer> totalParts = new TreeMap<Integer, Integer>();
+    Map<Integer, ArrayList<JTextField>> fromTxt = new TreeMap<Integer, ArrayList<JTextField>>();
+    Map<Integer, JCheckBox> dckts = new TreeMap<Integer, JCheckBox>();
+    Map<Integer, ArrayList> paramters = new TreeMap<Integer, ArrayList>();
+    Map<Integer, ArrayList> delParts = new TreeMap<Integer, ArrayList>();
+    Map<String, List<Double>> data = new TreeMap<String, List<Double>>();
+    Map<String, Integer> mva = new TreeMap<String, Integer>();
+    Map<Integer, List> totalLines = new TreeMap<Integer, List>();
+    String[] area;
     String[] zones = {"110 Qassim", "120 Hail", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
     String[] voltage;
     private int line = 1;
@@ -54,8 +54,11 @@ public class ckts {
         substationPanel.setBorder(new TitledBorder("Substation"));
         transmission.setBorder(new TitledBorder("Transmission Lines"));
         //Substation
+        JLabel region = new JLabel("Region:");
+        String[] regionArray = {"COA", "WOA", "EOA", "SOA"};
+        final JComboBox regionNum = new JComboBox(regionArray);
         JLabel areas = new JLabel("Area:");
-        String[] areaArray = {"100 COA", "200 WOA", "300 EOA", "400 SOA"};
+        String[] areaArray = {"100 COA"};
         final JComboBox areaNum = new JComboBox(areaArray);
         JLabel ssName = new JLabel("S/S Name:");
         JLabel rights = new JLabel("By:A.Al-Othman");
@@ -89,7 +92,9 @@ public class ckts {
         trfPanels.add(two);
         JLabel ssLoad = new JLabel("S/S Load:");
         final JTextField txtLoad = new JTextField();
-        JPanel tempPanel = new JPanel(new GridLayout(5, 2, 5, 5));
+        JPanel tempPanel = new JPanel(new GridLayout(7, 2, 5, 5));
+        tempPanel.add(region);
+        tempPanel.add(regionNum);
         tempPanel.add(areas);
         tempPanel.add(areaNum);
         tempPanel.add(ssNum);
@@ -115,15 +120,36 @@ public class ckts {
         btns.add(createPython);
         btns.add(rights);
         // Areas
+        regionNum.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        ArrayList zoneS;
+                        Data factory = new AreaFactory().checkarea(regionNum.getSelectedIndex());
+                        area = factory.area();
+                        DefaultComboBoxModel areas = new DefaultComboBoxModel(area);
+                        areaNum.setModel(areas);
+                        zoneS = factory.zone(Integer.valueOf(areaNum.getSelectedItem().toString().split(" ")[0]));
+                        DefaultComboBoxModel coa = new DefaultComboBoxModel(zoneS.toArray());
+                        zoneNum.setModel(coa);
+                        data = factory.data();
+                        mva = factory.mva();
+                        voltage = factory.voltage();
+                        v138.setText(voltage[0]);
+                        v33.setText(voltage[1]);
+                        removeall();
+                    }
+                }
+        );
         areaNum.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                String[] zoneS;
-                Data factory = new AreaFactory().checkarea(areaNum.getSelectedIndex());
+                ArrayList zoneS;
+                Data factory = new AreaFactory().checkarea(regionNum.getSelectedIndex());
                 area = factory.area();
-                zoneS = factory.zone();
-                DefaultComboBoxModel coa = new DefaultComboBoxModel(zoneS);
+                zoneS = factory.zone(Integer.valueOf(areaNum.getSelectedItem().toString().split(" ")[0]));
+                DefaultComboBoxModel coa = new DefaultComboBoxModel(zoneS.toArray());
                 zoneNum.setModel(coa);
                 data = factory.data();
                 mva = factory.mva();
@@ -174,9 +200,9 @@ public class ckts {
                 // Get the parameters and calculate the Length * Type
                 for (Integer key : paramters.keySet()) {
                     // Temporary Arrays to store the data
-                    ArrayList<List> para = new ArrayList<>();
-                    ArrayList<Double> km = new ArrayList<>();
-                    ArrayList<Integer> mvaVal = new ArrayList<>();
+                    ArrayList<List> para = new ArrayList<List>();
+                    ArrayList<Double> km = new ArrayList<Double>();
+                    ArrayList<Integer> mvaVal = new ArrayList<Integer>();
                     // The first column of the array is the Length and the second is the Type
                     // This is a for loop to extract each one
                     for (int i = 0; i < paramters.get(key).size(); i++) {
@@ -240,10 +266,12 @@ public class ckts {
                 }
                 // Get the Double Circuit check and write to file
                 try {
-
+                    // Prepare the file and store it in the Desktop
                     String userHomeFolder = System.getProperty("user.home");
                     File textFile = new File(userHomeFolder + "/Desktop", txtNum.getText() + " Substation.py");
                     FileWriter writer = new FileWriter(textFile, false);
+                    // Get the data
+                    String[] areaNumber = areaNum.getSelectedItem().toString().split(" ");
                     String subName = txtName.getText();
                     String subNum = txtNum.getText();
                     String[] zNum = zoneNum.getSelectedItem().toString().split(" ");
@@ -257,7 +285,7 @@ public class ckts {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
 
                             } else {
-                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), zNum[0], subLoad, subNum).v33T3();
+                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), areaNumber[0], zNum[0], subLoad, subNum).v33T3();
                             temp = temp.replace("Name", subName);
                             writer.write(temp);
                                 writer.write("\r\n");
@@ -267,7 +295,7 @@ public class ckts {
                             if (subLoad.length != 8) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             } else {
-                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), zNum[0], subLoad, subNum).v13T3();
+                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), areaNumber[0], zNum[0], subLoad, subNum).v13T3();
                                 temp = temp.replace("Name", subName);
                                 writer.write(temp);
                                 writer.write("\r\n");
@@ -280,7 +308,7 @@ public class ckts {
                             if (subLoad.length > 4) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             } else {
-                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), zNum[0], subLoad, subNum).v33T2();
+                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), areaNumber[0], zNum[0], subLoad, subNum).v33T2();
                                 temp = temp.replace("Name", subName);
                                 writer.write(temp);
                                 writer.write("\r\n");
@@ -290,7 +318,7 @@ public class ckts {
                             if (subLoad.length > 4) {
                                 JOptionPane.showMessageDialog(rootPanel, "Please check that you input the correct load");
                             } else {
-                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), zNum[0], subLoad, subNum).v13T2();
+                                temp = new PythonFactory().getPython(areaNum.getSelectedIndex(), areaNumber[0], zNum[0], subLoad, subNum).v13T2();
                                 temp = temp.replace("Name", subName);
                                 writer.write(temp);
                                 writer.write("\r\n");
@@ -401,9 +429,9 @@ public class ckts {
     private void addlines(final int line) {
 
 
-        ArrayList<JTextField> temp = new ArrayList<>();
+        ArrayList<JTextField> temp = new ArrayList<JTextField>();
         final ArrayList tempo = new ArrayList();
-        final ArrayList tempParts = new ArrayList<>();
+        final ArrayList tempParts = new ArrayList();
         setPart(1);
         // Correct Number of parts for each circuit
         totalParts.put(line, part);

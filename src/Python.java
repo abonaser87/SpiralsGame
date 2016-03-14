@@ -121,15 +121,16 @@ class PyCOA implements Python {
 }
 
 class PyWOA implements Python {
+    private String area;
     private String zone;
     private String[] subLoad;
     private String cc;
     private String temp;
 
-    public PyWOA(String zone, String[] subLoad, String subNum) {
+    public PyWOA(String area, String zone, String[] subLoad, String subNum) {
         this.zone = zone;
         this.subLoad = subLoad;
-        this.cc = "1";
+        this.area = area;
     }
 
     @Override
@@ -154,15 +155,16 @@ class PyWOA implements Python {
 }
 
 class PyEOA implements Python {
+    private String area;
     private String zone;
     private String[] subLoad;
     private String cc;
     private String temp;
 
-    public PyEOA(String zone, String[] subLoad, String subNum) {
+    public PyEOA(String area, String zone, String[] subLoad, String subNum) {
         this.zone = zone;
         this.subLoad = subLoad;
-        this.cc = "1";
+        this.area = area;
     }
 
     @Override
@@ -187,15 +189,16 @@ class PyEOA implements Python {
 }
 
 class PySOA implements Python {
+    private String area;
     private String zone;
     private String[] subLoad;
     private String cc;
     private String temp;
 
-    public PySOA(String zone, String[] subLoad, String subNum) {
+    public PySOA(String area, String zone, String[] subLoad, String subNum) {
         this.zone = zone;
         this.subLoad = subLoad;
-        this.cc = "1";
+        this.area = area;
     }
 
     @Override

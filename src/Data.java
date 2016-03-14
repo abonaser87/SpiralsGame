@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created by abdullah on 12/25/15.
@@ -10,9 +7,9 @@ public interface Data {
     // Area , Zone , Voltage
     //  Python Class
 
-    String area();
+    String[] area();
 
-    String[] zone();
+    ArrayList zone(int areaNum);
 
     String[] voltage();
 
@@ -24,13 +21,15 @@ public interface Data {
 class COA implements Data {
 
     @Override
-    public String area() {
-        return "100";
+    public String[] area() {
+        String[] areas = {"100 COA"};
+        return areas;
     }
 
     @Override
-    public String[] zone() {
-        String[] zone = {"110 Qassim", "120 Hail", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
+    public ArrayList zone(int areaNum) {
+        ArrayList<String> zone = new ArrayList<String>();
+        zone.addAll(Arrays.asList("110 Qassim", "120 Hail", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"));
         return zone;
     }
 
@@ -43,7 +42,7 @@ class COA implements Data {
 
     @Override
     public Map<String, List<Double>> data() {
-        Map<String, List<Double>> data = new TreeMap<>();
+        Map<String, List<Double>> data = new TreeMap<String, List<Double>>();
         data.put("ACSR-CONDOR 1x402", Arrays.asList(0.0005125115, 0.0027525253, 0.0006271000, 0.0011025023, 0.0055727732));
         data.put("ACSR-CONDOR 2x402", Arrays.asList(0.0002565427, 0.0017952250, 0.0008966069, 0.0009808310, 0.0051733242));
         data.put("ACSR-HAWK 1x240", Arrays.asList(0.0008545684, 0.0026968549, 0.0006019419, 0.0012654959, 0.0056250000));
@@ -62,7 +61,7 @@ class COA implements Data {
 
     @Override
     public Map<String, Integer> mva() {
-        Map<String, Integer> mva = new TreeMap<>();
+        Map<String, Integer> mva = new TreeMap<String, Integer>();
         mva.put("ACSR-CONDOR 1x402", 151);
         mva.put("ACSR-CONDOR 2x402", 274);
         mva.put("ACSR-HAWK 1x240", 102);
@@ -83,14 +82,28 @@ class COA implements Data {
 class WOA implements Data {
 
     @Override
-    public String area() {
-        return "200";
+    public String[] area() {
+        String[] areas = {"204 Rabigh", "211 JED South"};
+        return areas;
     }
 
     @Override
-    public String[] zone() {
-        String[] zone = {"110 Makkah", "120 Jeddah", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
-        return zone;
+    public ArrayList zone(int areaNum) {
+        ArrayList<String> zone = new ArrayList<String>();
+        switch (areaNum) {
+            case 204:
+                zone.clear();
+                zone.addAll(Arrays.asList("207 Rabigh", "120 Jeddah", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"));
+                return zone;
+
+            case 211:
+                zone.clear();
+                zone.addAll(Arrays.asList("200 PP3", "120 Jeddah", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"));
+                return zone;
+        }
+
+
+        return null;
     }
 
     @Override
@@ -101,7 +114,7 @@ class WOA implements Data {
 
     @Override
     public Map<String, List<Double>> data() {
-        Map<String, List<Double>> data = new TreeMap<>();
+        Map<String, List<Double>> data = new TreeMap<String, List<Double>>();
         data.put("WOA-CONDOR 1x402", Arrays.asList(0.0005125115, 0.0027525253, 0.0006271000, 0.0011025023, 0.0055727732));
         data.put("WOA-CONDOR 2x402", Arrays.asList(0.0002565427, 0.0017952250, 0.0008966069, 0.0009808310, 0.0051733242));
         data.put("WOA-HAWK 1x240", Arrays.asList(0.0008545684, 0.0026968549, 0.0006019419, 0.0012654959, 0.0056250000));
@@ -120,7 +133,7 @@ class WOA implements Data {
 
     @Override
     public Map<String, Integer> mva() {
-        Map<String, Integer> mva = new TreeMap<>();
+        Map<String, Integer> mva = new TreeMap<String, Integer>();
         mva.put("ACSR-CONDOR 1x402", 151);
         mva.put("ACSR-CONDOR 2x402", 274);
         mva.put("ACSR-HAWK 1x240", 102);
@@ -141,14 +154,14 @@ class WOA implements Data {
 class EOA implements Data {
 
     @Override
-    public String area() {
+    public String[] area() {
         return null;
     }
 
     @Override
-    public String[] zone() {
-        String[] zone = {"110 HASSA", "120 mbaraz", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
-        return zone;
+    public ArrayList zone(int areaNum) {
+//        String[] zone = {"110 HASSA", "120 mbaraz", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
+        return null;
     }
 
     @Override
@@ -171,14 +184,14 @@ class EOA implements Data {
 class SOA implements Data {
 
     @Override
-    public String area() {
+    public String[] area() {
         return null;
     }
 
     @Override
-    public String[] zone() {
-        String[] zone = {"110 Assir", "120 z8h", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
-        return zone;
+    public ArrayList zone(int areaNum) {
+//        String[] zone = {"110 Assir", "120 z8h", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"};
+        return null;
     }
 
     @Override
