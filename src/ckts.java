@@ -47,7 +47,7 @@ public class ckts {
         data = new AreaFactory().checkarea(0).data();
         mva = new AreaFactory().checkarea(0).mva();
 
-        voltage = new AreaFactory().checkarea(0).voltage();
+        voltage = new AreaFactory().checkarea(0).voltage(0);
         frame.setContentPane(rootPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -134,7 +134,7 @@ public class ckts {
                         zoneNum.setModel(coa);
                         data = factory.data();
                         mva = factory.mva();
-                        voltage = factory.voltage();
+                        voltage = factory.voltage(Integer.valueOf(areaNum.getSelectedItem().toString().split(" ")[0]));
                         v138.setText(voltage[0]);
                         v33.setText(voltage[1]);
                         removeall();
@@ -153,7 +153,7 @@ public class ckts {
                 zoneNum.setModel(coa);
                 data = factory.data();
                 mva = factory.mva();
-                voltage = factory.voltage();
+                voltage = factory.voltage(Integer.valueOf(areaNum.getSelectedItem().toString().split(" ")[0]));
                 v138.setText(voltage[0]);
                 v33.setText(voltage[1]);
                 removeall();

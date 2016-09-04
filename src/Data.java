@@ -11,7 +11,7 @@ public interface Data {
 
     ArrayList zone(int areaNum);
 
-    String[] voltage();
+    String[] voltage(int areaNum);
 
     Map<String, List<Double>> data();
 
@@ -34,7 +34,7 @@ class COA implements Data {
     }
 
     @Override
-    public String[] voltage() {
+    public String[] voltage(int areaNum) {
 
         String[] voltages = {"132/13.8kV", "132/33kV"};
         return voltages;
@@ -83,7 +83,7 @@ class WOA implements Data {
 
     @Override
     public String[] area() {
-        String[] areas = {"204 Rabigh", "211 JED South"};
+        String[] areas = {"204 RABIGH","211 JED SOUTH","212 JED CENTRAL","213 JED NORTH","202 MAKKAH","207 SEC-SHB","209 SWCC-DTA","210 IWPP-DTA","203 MEDINAH","208 TAIF","215 YANBU","500 WNA"};
         return areas;
     }
 
@@ -93,12 +93,52 @@ class WOA implements Data {
         switch (areaNum) {
             case 204:
                 zone.clear();
-                zone.addAll(Arrays.asList("207 Rabigh", "120 Jeddah", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"));
+                zone.addAll(Arrays.asList("207 RABIGH","227 TWL","266 DHBAN BLK"));
                 return zone;
 
             case 211:
                 zone.clear();
-                zone.addAll(Arrays.asList("200 PP3", "120 Jeddah", "130 Kharj", "140 R-Rural", "150 Dawadmi", "160 Riyadh City", "190 Juba"));
+                zone.addAll(Arrays.asList("200 PP3","221 HVP-2 IP3-3","231 BAHRA","242 JDS","243 MODON","248 JDS-PP","269 JED-JAH","275 JPFH"));
+                return zone;
+            case 212:
+                zone.clear();
+                zone.addAll(Arrays.asList("200 PP3","201 HVP IP3-1&2","202 IP3-2","203 WHA","214 KND","217 JAMIA","220 JNOR","230 KHZAM","247 AL-ADEL","254 JDC"));
+                return zone;
+            case 213:
+                zone.clear();
+                zone.addAll(Arrays.asList("204 HVE","205 DSP","212 FSL","215 KHULAIS","220 JNOR","228 JDNW","232 DAHBAN","244 JED N EAST","247 AL-ADEL","254 JDC","255 HHR2","257 SMR","262 KLD","263 JEDDAH CENTR","266 DHBAN BLK","269 JED-JAH","273 ABN","277 KAU-ASFAN"));
+                return zone;
+            case 203:
+                zone.clear();
+                zone.addAll(Arrays.asList("206 MADINAH","210 MUSAJEED","218 WADIFARA","222 MAD 33KV","225 MAD-EAST","235 HINAK","236 KHYBER","238 MED-BULK","239 MDW","260 MEDC","270 MAHD","272 MED-ICY","274 MDS PP"));
+                return zone;
+            case 202:
+                zone.clear();
+                zone.addAll(Arrays.asList("208 SAZ-MAK","213 WDJ","215 KHULAIS","224 HVM","226 MAK-WEST","229 MKN","240 LITH","241 SEC-SHB","246 MAKKAH CENTR","252 MASHAER","261 MAKKAH CENTR","264 MAKKAH NW","271 HNY","276 MKH","280 BAB-MAKKAH"));
+                return zone;
+            case 207:
+                zone.clear();
+                zone.addAll(Arrays.asList("241 SEC-SHB"));
+                return zone;
+            case 209:
+                zone.clear();
+                zone.addAll(Arrays.asList("223 SWCC-AUX","251 IPP-DTA"));
+                return zone;
+            case 210:
+                zone.clear();
+                zone.addAll(Arrays.asList("223 SWCC-AUX","251 IPP-DTA"));
+                return zone;
+            case 208:
+                zone.clear();
+                zone.addAll(Arrays.asList("211 TAIF","233 SISED","245 TAIF-EAST","256 SISED BULK"));
+                return zone;
+            case 215:
+                zone.clear();
+                zone.addAll(Arrays.asList("209 YANBU"));
+                return zone;
+            case 500:
+                zone.clear();
+                zone.addAll(Arrays.asList("501 TABUK","502 TAIMAH","503 DHUBA","504 WAJH","505 UALA","507 TABUK-2","510 TABUK BULK"));
                 return zone;
         }
 
@@ -107,9 +147,16 @@ class WOA implements Data {
     }
 
     @Override
-    public String[] voltage() {
-        String[] voltages = {"115/13.8kV", "115/33kV"};
-        return voltages;
+    public String[] voltage(int areaNum) {
+        switch(areaNum){
+            case 500:
+                String[] voltages500 = {"132/13.8kV", "132/33kV"};
+                return voltages500;
+            default:
+                String[] voltages = {"110/13.8kV", "110/33kV"};
+                return voltages;
+        }
+
     }
 
     @Override
@@ -165,7 +212,7 @@ class EOA implements Data {
     }
 
     @Override
-    public String[] voltage() {
+    public String[] voltage(int areaNum) {
         String[] voltages = {"110/13.8kV", "110/33kV"};
         return voltages;
     }
@@ -195,7 +242,7 @@ class SOA implements Data {
     }
 
     @Override
-    public String[] voltage() {
+    public String[] voltage(int areaNum) {
         String[] voltages = {"132/13.8kV", "132/33kV"};
         return voltages;
     }
