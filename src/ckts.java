@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
+import static java.awt.GridBagConstraints.LINE_START;
+
 /**
  * Created by 84170 on 14/12/2015.
  */
@@ -66,6 +68,8 @@ public class ckts {
         JLabel ssNum = new JLabel("S/S Number:");
         final JTextField txtName = new JTextField();
         final JTextField txtNum = new JTextField();
+        JLabel lvNum = new JLabel("Low Voltage Bus Number:");
+        final JTextField lvTxtNum = new JTextField();
         JLabel zone = new JLabel("Zone Number:");
         final JComboBox zoneNum = new JComboBox(zoneModel);
         JPanel voltPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -90,15 +94,30 @@ public class ckts {
         trfPanels.add(trf);
         trfPanels.add(three);
         trfPanels.add(two);
-        JLabel ssLoad = new JLabel("S/S Load:");
+        JLabel ssLoad = new JLabel("S/S Load(MVA):");
         final JTextField txtLoad = new JTextField();
-        JPanel tempPanel = new JPanel(new GridLayout(7, 2, 5, 5));
+        JPanel loadPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel df = new JLabel("Diversity Factor:");
+        final JTextField txtDf = new JTextField();
+        txtDf.setColumns(4);
+        JLabel pf = new JLabel("Power Factor:");
+        final JTextField txtPf = new JTextField();
+        txtPf.setColumns(4);
+        loadPanel.add(df);
+        loadPanel.add(txtDf);
+        loadPanel.add(pf);
+        loadPanel.add(txtPf);
+        JPanel tempPanel = new JPanel(new GridLayout(7, 2, 3, 3));
         tempPanel.add(region);
         tempPanel.add(regionNum);
         tempPanel.add(areas);
         tempPanel.add(areaNum);
         tempPanel.add(ssNum);
         tempPanel.add(txtNum);
+        tempPanel.add(lvNum);
+        tempPanel.add(lvTxtNum);
+        // TODO : Grey low voltge for COA , and add DF and PF
+        lvTxtNum.setEnabled(false);
         tempPanel.add(ssName);
         tempPanel.add(txtName);
         tempPanel.add(zone);
@@ -106,11 +125,15 @@ public class ckts {
         tempPanel.add(ssLoad);
         tempPanel.add(txtLoad);
 
+        c.anchor=LINE_START;
         c.gridy = 0;
         substationPanel.add(tempPanel, c);
         c.gridy = 1;
-        substationPanel.add(voltPanel, c);
+
+        substationPanel.add(loadPanel,c);
         c.gridy = 2;
+        substationPanel.add(voltPanel, c);
+        c.gridy = 3;
         substationPanel.add(trfPanels, c);
 
 
@@ -138,6 +161,8 @@ public class ckts {
                         v138.setText(voltage[0]);
                         v33.setText(voltage[1]);
                         removeall();
+                        if(regionNum.getSelectedIndex()!=0){lvTxtNum.setEnabled(true);}
+                        else{lvTxtNum.setEnabled(false);}
                     }
                 }
         );
